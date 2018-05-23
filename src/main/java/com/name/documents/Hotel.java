@@ -1,0 +1,54 @@
+package com.name.documents;
+
+import com.name.models.EachRoom;
+import com.name.models.Location;
+import com.name.models.Name;
+import com.name.models.Type;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.*;
+
+@Document
+@Getter
+@Setter
+public class Hotel {
+    private String id = UUID.randomUUID().toString();
+    private String name;
+    private Set<Name> names = new HashSet<>();
+    private String district;
+    private String city;
+    private List<String> images = new ArrayList<>();
+    private String address;
+    private int stars;
+    private String description;
+    private Set<String> facilities = new HashSet<>();
+    private Location location;
+    private String mealPlan;
+    private String cancelPolicy;
+    private String accomType;
+    private Set<EachRoom> eachRooms = new HashSet<>();
+    private Set<Type> type1 = new HashSet<>();
+    private Set<Type> type2 = new HashSet<>();
+    private Set<Type> type3 = new HashSet<>();
+    private Set<Type> type4 = new HashSet<>();
+    private Set<Type> type5 = new HashSet<>();
+
+    public Set<Type> callTypeMethod(String type){
+        switch (type){
+            case "type1":
+                return type1;
+            case "type2":
+                return type2;
+            case "type3":
+                return type3;
+            case "type4":
+                return type4;
+            case "type5":
+                return type5;
+        }
+        return null;
+    }
+
+}
