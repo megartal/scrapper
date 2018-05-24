@@ -1,20 +1,20 @@
 package com.name.util;
 
+import com.google.common.collect.Sets;
 import com.name.OTAs.OTA;
 import com.name.documents.Hotel;
+import com.name.documents.Rate;
 import com.name.models.*;
 import com.name.services.HotelService;
 import com.name.services.MatchService;
+import com.name.services.RateService;
 import com.name.services.RawMatchService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -30,11 +30,13 @@ public class Crawler {
     private final HotelService hotelService;
     private final RawMatchService rawMatchService;
     private final MatchService matchService;
+    private final RateService rateService;
 
-    public Crawler(HotelService hotelService, RawMatchService rawMatchService, MatchService matchService) {
+    public Crawler(HotelService hotelService, RawMatchService rawMatchService, MatchService matchService, RateService rateService) {
         this.hotelService = hotelService;
         this.rawMatchService = rawMatchService;
         this.matchService = matchService;
+        this.rateService = rateService;
     }
 
     public void crawl(OTA ota) {
@@ -65,6 +67,8 @@ public class Crawler {
                     Optional<Type> found = hotel.callTypeMethod(roomType).stream().filter(x -> x.getName().equals(mainName)).findFirst();
                     Set<Type> filteredCollect = hotel.callTypeMethod(roomType).stream().filter(x -> !x.getName().equals(mainName)).collect(Collectors.toSet());
                     if (found.isPresent()) {
+                        Optional<OTAData> otaNeedToUpdate = found.get().getOTAs().stream().filter(x -> x.getName().equals(ota.getName())).findFirst();
+                        isChanged(hotel.getName(), ota.getName(), mainName, otaNeedToUpdate.get().getPrices(), crawledData.getOtaData().getPrices());
                         found.get().getOTAs().remove(crawledData.getOtaData());
                         found.get().getOTAs().add(crawledData.getOtaData());
                         hotel.callTypeMethod(roomType).clear();
@@ -80,6 +84,17 @@ public class Crawler {
             }
             hotelService.updateHotelPrices(hotel);
         }
+    }
+
+    private void isChanged(String hotelName, String otaName, String room, Set<Price> oldPrices, Set<Price> newPrices) {
+        Rate rate;
+        if(Sets.symmetricDifference(oldPrices,newPrices).isEmpty()){
+            rate = new Rate(new Date(), otaName, hotelName, room, false);
+
+        }else {
+            rate = new Rate(new Date(), otaName, hotelName, room, true);
+        }
+            rateService.add(rate);
     }
 
     private String getHotelNameCalledByOTA(Set<Name> names, String ota) {
