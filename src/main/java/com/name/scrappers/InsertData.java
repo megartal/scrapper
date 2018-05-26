@@ -1,17 +1,21 @@
 package com.name.scrappers;
 
+import com.name.documents.City;
 import com.name.documents.Hotel;
 import com.name.documents.Match;
 import com.name.models.Name;
 import com.name.models.OTAMatch;
 import com.name.models.RoomMatch;
+import com.name.repositories.CityRepository;
 import com.name.repositories.HotelRepository;
 import com.name.repositories.MatchRepository;
 import com.name.repositories.RawMatchRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,19 +27,29 @@ import java.util.Set;
 public class InsertData implements Scrapper{
     private final HotelRepository hotelRepository;
     private final MatchRepository matchRepository;
+    private final CityRepository cityRepository;
     private final RawMatchRepository rawMatchRepository;
 
-    public InsertData(HotelRepository hotelRepository, MatchRepository matchRepository, RawMatchRepository rawMatchRepository) {
+    public InsertData(HotelRepository hotelRepository, MatchRepository matchRepository, CityRepository cityRepository, RawMatchRepository rawMatchRepository) {
         this.hotelRepository = hotelRepository;
         this.matchRepository = matchRepository;
+        this.cityRepository = cityRepository;
         this.rawMatchRepository = rawMatchRepository;
     }
 
 
     @Override
     public void start() {
-        insertNewHotel();
+//        insertNewHotel();
 //        insertMatch();
+        insertCity();
+    }
+
+    private void insertCity() {
+        List<City> cities = new ArrayList<>();
+        cities.add(new City("تهران", "تهران"));
+        cities.add(new City("تبریز", "آذربایجان شرقی"));
+        cityRepository.saveAll(cities);
     }
 
     private void insertMatch() {

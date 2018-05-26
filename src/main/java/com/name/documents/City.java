@@ -17,4 +17,9 @@ public class City{
     private String id = UUID.randomUUID().toString();
     private String name;
     private String district;
+
+    public City(String name, String district) {
+        this.name = name;
+        this.district = district;
+    }
 }

@@ -1,26 +1,99 @@
 package com.name.scrappers;
 
-//import com.diringo.client.MongodbClient;
-//import org.bson.Document;
+import com.name.documents.City;
+import com.name.documents.Hotel;
+import com.name.services.CityService;
+import com.name.services.HotelService;
+import com.name.util.ApacheHttpClient;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by Tahoe on 2/18/2018.
+ * Created by Akbar on 2/18/2018.
  */
-public class ScrapHotelNamesMain {
-//    public static void main(String[] args) {
-//        List<String> cities = new ArrayList<>(Arrays.asList("یزد"));
-//        HotelListScrapper hotelListScrapper = new HotelListScrapper(cities);
-//        insertIntoDB(hotelListScrapper.getHotelNames());
-//
-//    }
-//
-//    private static void insertIntoDB(List<Map<String, String>> hotelNames) {
-//        List<Document> documents = new ArrayList<>();
-//        for (Map<String, String> hotelName : hotelNames) {
-//            for (Map.Entry<String, String> entry : hotelName.entrySet()) {
-//                documents.add(new Document("name", entry.getValue()).append("city", entry.getKey()));
-//            }
-//        }
-//        MongodbClient.getCollection("hotel").insertMany(documents);
-//    }
+@Service
+@Profile({"names"})
+@Slf4j
+@Getter
+@Setter
+public class ScrapHotelNamesMain implements Scrapper {
+
+    private final CityService cityService;
+    private final HotelService hotelService;
+
+    @Value("${hotel_name_scrapper.resultsInEachPage}")
+    private int resultInEachPage;
+    @Value("${hotel_name_scrapper.url}")
+    private String url;
+    @Value("${hotel_name_scrapper.selector}")
+    private String selector;
+
+    public ScrapHotelNamesMain(CityService cityService, HotelService hotelService) {
+        this.cityService = cityService;
+        this.hotelService = hotelService;
+    }
+
+    @Override
+    public void start() {
+        List<City> cities = cityService.getAllCities();
+        List<Hotel> hotels = getHotelNames(cities);
+        hotelService.saveHotels(hotels);
+    }
+
+    public List<Hotel> getHotelNames(List<City> cities) {
+        List<Hotel> hotels = new ArrayList<>();
+        for (City rawCity : cities) {
+            String city = null;
+            try {
+                city = URLEncoder.encode(rawCity.getName(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                log.error(e.getMessage(), e.getCause());
+            }
+            int pageNum = 1;
+            while (true) {
+                String result = ApacheHttpClient.getHtml(createURL(city, String.valueOf(pageNum)));
+                Document doc = Jsoup.parse(result);
+                if (doc.select(String.format(getSelector(), 1)) == null || doc.select(String.format(getSelector(), 1)).html().isEmpty()) {
+                    break;
+                } else {
+                    for (int i = 1; i <= getResultInEachPage(); i++) {
+                        String hotelName = doc.select(String.format(getSelector(), i)).html();
+                        if (hotelName != "" && hotelName != null && !hotelName.isEmpty()) {
+                            Hotel hotel = new Hotel();
+                            hotel.setCity(rawCity.getName());
+                            hotel.setName(hotelName);
+                            hotels.add(hotel);
+                            log.info("###### city: " + rawCity + ", hotel: " + hotelName + " ######");
+                        } else {
+                            log.info("###### is empty! ######");
+                        }
+                    }
+                }
+                pageNum++;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return hotels;
+    }
+
+    private String createURL(String city, String page) {
+        String str = getUrl().replace("city", city);
+        str = str.replace("pageNumber", page);
+        return str;
+    }
 }

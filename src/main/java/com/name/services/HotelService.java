@@ -25,4 +25,8 @@ public class HotelService {
     public void updateHotelPrices(Hotel hotel) {
         hotelRepository.save(hotel);
     }
+
+    public void saveHotels(List<Hotel> hotels) {
+        hotelRepository.saveAll(hotels);
+    }
 }
