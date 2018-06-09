@@ -1,9 +1,6 @@
 package com.name.documents;
 
-import com.name.models.EachRoom;
-import com.name.models.Location;
-import com.name.models.Name;
-import com.name.models.Type;
+import com.name.models.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,12 +16,13 @@ public class Hotel {
     private Set<Name> names = new HashSet<>();
     private String district;
     private String city;
-    private List<String> images = new ArrayList<>();
+    private String mainImage;
+    private List<Image> images = new ArrayList<>();
     private String address;
-    private int stars;
+    private Integer stars;
     private String description;
-    private Set<String> facilities = new HashSet<>();
-    private Location location;
+    private Set<Amenity> amenities = new HashSet<>();
+    private Location location = new Location("", "");
     private String mealPlan;
     private String cancelPolicy;
     private String accomType;

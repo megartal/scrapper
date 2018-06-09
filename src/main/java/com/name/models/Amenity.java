@@ -6,12 +6,12 @@ import lombok.Setter;
 
 /**
  * @Author Akbar
- * @DATE 4/28/2018.
+ * @DATE 6/9/2018.
  */
 @Getter
 @Setter
 @AllArgsConstructor
-public class EachRoom {
+public class Amenity {
     private String name;
-    private Integer type;
+    private boolean value;
 }

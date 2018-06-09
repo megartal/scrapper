@@ -29,4 +29,8 @@ public class HotelService {
     public void saveHotels(List<Hotel> hotels) {
         hotelRepository.saveAll(hotels);
     }
+
+    public void saveHotel(Hotel hotelToPersist) {
+        hotelRepository.save(hotelToPersist);
+    }
 }

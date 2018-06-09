@@ -1,5 +1,6 @@
 package com.name.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +10,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@AllArgsConstructor
 public class Location {
-    private double lang;
-    private double lat;
+    private String lat;
+    private String lang;
 }
