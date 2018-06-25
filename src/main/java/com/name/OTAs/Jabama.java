@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,14 +27,13 @@ import java.util.*;
 @Getter
 @Slf4j
 public class Jabama extends BaseOTA {
+    private final Crawler crawler;
     @Value("${jabama.urlPattern}")
     private String urlPattern;
     @Value("${jabama.redirect}")
     private String redirect;
     @Value("${jabama.sleep}")
     private int sleep;
-    private final Crawler crawler;
-
     private String name = "jabama";
 
     public Jabama(Crawler crawler) {
@@ -49,7 +49,7 @@ public class Jabama extends BaseOTA {
         c.add(Calendar.DATE, 32);
         String startDate = DateConverter.getShamsidate(dt).replace("/", "");
         String endDate = DateConverter.getShamsidate(c.getTime()).replace("/", "");
-        org.jsoup.nodes.Document htmlDocument = getHtmlDocument(createURL(calledName, startDate, endDate));
+        Document htmlDocument = getHtmlDocument(createURL(calledName, startDate, endDate));
         Elements scripts = htmlDocument.getElementsByTag("script");
         for (Element script : scripts) {
             if (script.data().contains("hotelDetailResult")) {
@@ -82,7 +82,7 @@ public class Jabama extends BaseOTA {
         return null;
     }
 
-    protected String createURL(String calledName, String startDate, String endDate) {
+    private String createURL(String calledName, String startDate, String endDate) {
         setUrlToCrawl(String.format(getUrlPattern(), calledName, startDate, endDate));
         return getUrlToCrawl();
     }
@@ -95,7 +95,6 @@ public class Jabama extends BaseOTA {
                 Thread.sleep(sleep);
             } catch (Exception e) {
                 log.error("error in jabama: " + e.getMessage());
-
             }
         }
     }

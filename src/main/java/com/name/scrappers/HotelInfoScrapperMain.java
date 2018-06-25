@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 /**
- * Created by Tahoe on 2/19/2018.
+ * Created by Akbar on 2/19/2018.
  */
 @Service
 @Profile({"info"})
@@ -100,8 +100,6 @@ public class HotelInfoScrapperMain implements Scrapper{
     }
 
     public void start() {
-        System.out.println("hello from info");
-
         Map<Hotel, String> hotels = prepareHotels(urlFormat);
         for (Map.Entry<Hotel, String> hotel : hotels.entrySet()) {
             extractInfo(hotel.getKey(), hotel.getValue());

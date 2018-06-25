@@ -2,14 +2,19 @@ package com.name.scrappers;
 
 import com.name.documents.City;
 import com.name.documents.Hotel;
+import com.name.models.EachRoom;
+import com.name.models.Name;
 import com.name.services.CityService;
 import com.name.services.HotelService;
 import com.name.util.ApacheHttpClient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -17,7 +22,9 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Akbar on 2/18/2018.
@@ -38,6 +45,11 @@ public class ScrapHotelNamesMain implements Scrapper {
     private String url;
     @Value("${hotel_name_scrapper.selector}")
     private String selector;
+    @Value("${hotel_name_scrapper.roomDiv}")
+    private String roomDiv;
+    @Value("${hotel_name_scrapper.webservice}")
+    private String webservice;
+
 
     public ScrapHotelNamesMain(CityService cityService, HotelService hotelService) {
         this.cityService = cityService;
@@ -56,7 +68,7 @@ public class ScrapHotelNamesMain implements Scrapper {
         for (City rawCity : cities) {
             String city = null;
             try {
-                city = URLEncoder.encode(rawCity.getName(), "UTF-8");
+                city = URLEncoder.encode(rawCity.getCity(), "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 log.error(e.getMessage(), e.getCause());
             }
@@ -69,10 +81,15 @@ public class ScrapHotelNamesMain implements Scrapper {
                 } else {
                     for (int i = 1; i <= getResultInEachPage(); i++) {
                         String hotelName = doc.select(String.format(getSelector(), i)).html();
+                        String url = "https://www.snapptrip.com" + doc.select(String.format(getSelector(), i)).attr("href");
                         if (hotelName != "" && hotelName != null && !hotelName.isEmpty()) {
                             Hotel hotel = new Hotel();
-                            hotel.setCity(rawCity.getName());
+                            Set<Name> names = new HashSet<>();
+                            names.add(new Name("snapptrip", hotelName, url));
+                            hotel.setCity(rawCity.getCity());
                             hotel.setName(hotelName);
+                            hotel.setNames(names);
+                            hotel.setEachRooms(getRoomsName(url));
                             hotels.add(hotel);
                             log.info("###### city: " + rawCity + ", hotel: " + hotelName + " ######");
                         } else {
@@ -89,6 +106,28 @@ public class ScrapHotelNamesMain implements Scrapper {
             }
         }
         return hotels;
+    }
+
+    private Set<EachRoom> getRoomsName(String url) {
+        Elements roomElements = getRoomElements(getHtmlDocument(url), getRoomDiv());
+        Set<EachRoom> eachRooms = new HashSet<>();
+        for (Element roomElement : roomElements) {
+            String roomID = roomElement.attr("id").replace("room_", "");
+            String html = ApacheHttpClient.getHtml(String.format(getWebservice(), roomID));
+            JSONObject jsonObject = (JSONObject) new JSONObject(html).get("data");
+            String roomName = jsonObject.getString("room_title");
+            eachRooms.add(new EachRoom(roomName));
+        }
+        return eachRooms;
+    }
+
+    protected Document getHtmlDocument(String url) {
+        String html = ApacheHttpClient.getHtml(url);
+        return Jsoup.parse(html);
+    }
+
+    protected Elements getRoomElements(Document doc, String roomDiv) {
+        return doc.getElementsByClass(roomDiv);
     }
 
     private String createURL(String city, String page) {

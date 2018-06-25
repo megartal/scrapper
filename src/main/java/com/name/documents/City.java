@@ -15,11 +15,11 @@ import java.util.UUID;
 @Setter
 public class City{
     private String id = UUID.randomUUID().toString();
-    private String name;
-    private String district;
+    private String city;
+    private String province;
 
-    public City(String name, String district) {
-        this.name = name;
-        this.district = district;
+    public City(String city, String province) {
+        this.city = city;
+        this.province = province;
     }
 }

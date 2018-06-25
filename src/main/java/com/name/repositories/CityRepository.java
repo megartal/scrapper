@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 @Repository
 public interface CityRepository  extends MongoRepository<City, String> {
-    Optional<City> findByName(String name);
+    Optional<City> findByCity(String city);
 
-    Optional<City> deleteByName(String name);
+    Optional<City> deleteByCity(String city);
 }
