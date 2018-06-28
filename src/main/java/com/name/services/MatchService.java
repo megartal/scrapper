@@ -28,4 +28,8 @@ public class MatchService {
         }
         return null;
     }
+
+    public void saveMatch(Match hotelMatch) {
+        matchRepository.save(hotelMatch);
+    }
 }

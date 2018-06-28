@@ -42,7 +42,9 @@ public class InsertData implements Scrapper{
     public void start() {
 //        insertNewHotel();
 //        insertMatch();
-        insertCity();
+//        insertCity();
+        matchRepository.deleteAll();
+        hotelRepository.deleteAll();
     }
 
     private void insertCity() {

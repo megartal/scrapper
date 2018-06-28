@@ -1,9 +1,13 @@
 package com.name.scrappers;
 
 import com.name.documents.Hotel;
-import com.name.models.*;
+import com.name.models.Amenity;
+import com.name.models.Image;
+import com.name.models.Location;
+import com.name.models.Name;
 import com.name.services.HotelService;
 import com.name.util.ApacheHttpClient;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -19,7 +23,8 @@ import java.util.*;
  */
 @Service
 @Profile({"info"})
-public class HotelInfoScrapperMain implements Scrapper{
+@Slf4j
+public class HotelInfoScrapperMain implements Scrapper {
 
     private final HotelService hotelService;
     @Value("${xpath}")
@@ -35,53 +40,97 @@ public class HotelInfoScrapperMain implements Scrapper{
         String html = ApacheHttpClient.getHtml(url);
         Document doc = Jsoup.parse(html);
         String data = doc.select(xpath).get(0).data();
+        String[] splitJson = data.split(",");
+        String addressJSON = null;
+        String amenityFeatureJSON = null;
+        String latitudeJSON = null;
+        String longitudeJSON = null;
+        String imageJSON = null;
+        for (String json : splitJson) {
+            if (json.contains("streetAddress")) {
+                addressJSON = "{" + json + "}";
+            } else if (json.contains("latitude")) {
+                latitudeJSON = "{" + json + "}";
+            } else if (json.contains("longitude")) {
+                longitudeJSON = "{" + json + "}";
+            } else if (json.contains("image")) {
+                imageJSON = "{" + json + "}";
+            }
+        }
+
 
         String baseURL = "https://images.jabama.co/";
-        ArrayList<Image> images = new ArrayList<>();
-        JSONArray imgs = new JSONArray(new JSONObject(doc.select("script").get(8).data().replace("var hotelDetailResult = ", "")).get("Images").toString());
-        for (Object image : imgs) {
-            JSONObject obj = (JSONObject) image;
-            Image img = new Image(baseURL + obj.get("Id"), (String) obj.get("Caption"));
-            images.add(img);
+        try {
+            ArrayList<Image> images = new ArrayList<>();
+            JSONArray imgs = new JSONArray(new JSONObject(doc.select("script").get(8).data().replace("var hotelDetailResult = ", "")).get("Images").toString());
+            for (Object image : imgs) {
+                JSONObject obj = (JSONObject) image;
+                Image img = new Image(baseURL + obj.get("Id"), (String) obj.get("Caption"));
+                images.add(img);
+            }
+            hotel.setImages(images);
+        } catch (Exception e) {
+            log.error("###images failed!!!");
         }
-        hotel.setImages(images);
 
-
-        String description = data.split(",")[4].split(":")[1].replace("\"", "").trim();
-        hotel.setDescription(description);
-
+        try {
+            String description = data.split(",")[4].split(":")[1].replace("\"", "").trim();
+            hotel.setDescription(description);
+        } catch (Exception e) {
+            log.error("###description failed!!!");
+        }
         data = data.replace(data.substring(data.indexOf("\"description"), data.indexOf("\"url")), "");
-        String address = (String) new JSONObject(new JSONObject(data).get("address").toString()).get("streetAddress");
-        hotel.setAddress(address.trim());
 
-        JSONArray amenityFeature = new JSONArray(new JSONObject(data).get("amenityFeature").toString());
-        Set<Amenity> amenities = new HashSet<>();
-        for (Object feature : amenityFeature) {
-            JSONObject obj = new JSONObject(feature.toString());
-            Amenity amenity = new Amenity((String) obj.get("name"), (boolean) obj.get("value"));
-            amenities.add(amenity);
+        try {
+            String address = (String) new JSONObject(addressJSON).get("streetAddress");
+            hotel.setAddress(address.trim());
+        } catch (Exception e) {
+            log.error("###address failed!!!");
         }
-        hotel.setAmenities(amenities);
 
-        JSONArray containsPlace = new JSONArray(new JSONObject(data).get("containsPlace").toString());
-        Set<EachRoom> rooms = new HashSet<>();
-        for (Object room : containsPlace) {
-            JSONObject obj = new JSONObject(room.toString());
-            EachRoom eachRoom = new EachRoom((String) obj.get("name"), (Integer) obj.get("maximumAttendeeCapacity"));
-            rooms.add(eachRoom);
+        try {
+            JSONArray amenityFeature = new JSONArray(new JSONObject(data).get("amenityFeature").toString());
+            Set<Amenity> amenities = new HashSet<>();
+            for (Object feature : amenityFeature) {
+                JSONObject obj = new JSONObject(feature.toString());
+                Amenity amenity = new Amenity((String) obj.get("name"), (boolean) obj.get("value"));
+                amenities.add(amenity);
+            }
+            hotel.setAmenities(amenities);
+        } catch (Exception e) {
+            log.error("###amenities failed!!!");
         }
-        hotel.setEachRooms(rooms);
 
-        JSONObject geo = new JSONObject(new JSONObject(data).get("geo").toString());
-        Location location = new Location((String) geo.get("latitude"), (String) geo.get("longitude"));
-        hotel.setLocation(location);
 
-        Integer star = (Integer) new JSONObject(new JSONObject(data).get("starRating").toString()).get("ratingValue");
-        hotel.setStars(star);
+//        JSONArray containsPlace = new JSONArray(new JSONObject(data).get("containsPlace").toString());
+//        Set<EachRoom> rooms = new HashSet<>();
+//        for (Object room : containsPlace) {
+//            JSONObject obj = new JSONObject(room.toString());
+//            EachRoom eachRoom = new EachRoom((String) obj.get("name"), (Integer) obj.get("maximumAttendeeCapacity"));
+//            rooms.add(eachRoom);
+//        }
+//        hotel.setEachRooms(rooms);
 
-        String mainImage = (String) new JSONObject(data).get("image");
-        hotel.setMainImage(mainImage);
+        try {
+            Location location = new Location((String) new JSONObject(latitudeJSON).get("latitude"), (String) new JSONObject(longitudeJSON).get("longitude"));
+            hotel.setLocation(location);
+        } catch (Exception e) {
+            log.error("###location failed!!!");
+        }
 
+        try {
+            Integer star = (Integer) new JSONObject(new JSONObject(data).get("starRating").toString()).get("ratingValue");
+            hotel.setStars(star);
+        } catch (Exception e) {
+            log.error("###start failed!!!");
+        }
+
+        try {
+            String mainImage = new JSONObject(imageJSON).get("image").toString();
+            hotel.setMainImage(mainImage);
+        } catch (Exception e) {
+            log.error("###main image failed!!!");
+        }
         hotelService.saveHotel(hotel);
     }
 

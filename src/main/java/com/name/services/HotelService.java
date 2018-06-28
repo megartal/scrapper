@@ -19,7 +19,7 @@ public class HotelService {
     }
 
     public List<Hotel> getAllHotels() {
-        return hotelRepository.findAllHotels();
+        return hotelRepository.findAllByCrawl(true);
     }
 
     public void updateHotelPrices(Hotel hotel) {

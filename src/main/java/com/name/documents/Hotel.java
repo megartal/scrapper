@@ -32,6 +32,8 @@ public class Hotel {
     private Set<Type> type3 = new HashSet<>();
     private Set<Type> type4 = new HashSet<>();
     private Set<Type> type5 = new HashSet<>();
+    private boolean crawl;
+    private boolean crawled;
 
     public Set<Type> callTypeMethod(String type){
         switch (type){

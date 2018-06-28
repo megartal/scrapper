@@ -2,10 +2,13 @@ package com.name.scrappers;
 
 import com.name.documents.City;
 import com.name.documents.Hotel;
+import com.name.documents.Match;
 import com.name.models.EachRoom;
 import com.name.models.Name;
+import com.name.models.OTAMatch;
 import com.name.services.CityService;
 import com.name.services.HotelService;
+import com.name.services.MatchService;
 import com.name.util.ApacheHttpClient;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +40,7 @@ public class ScrapHotelNamesMain implements Scrapper {
 
     private final CityService cityService;
     private final HotelService hotelService;
+    private final MatchService matchService;
 
     @Value("${hotel_name_scrapper.resultsInEachPage}")
     private int resultInEachPage;
@@ -51,20 +54,19 @@ public class ScrapHotelNamesMain implements Scrapper {
     private String webservice;
 
 
-    public ScrapHotelNamesMain(CityService cityService, HotelService hotelService) {
+    public ScrapHotelNamesMain(CityService cityService, HotelService hotelService, MatchService matchService) {
         this.cityService = cityService;
         this.hotelService = hotelService;
+        this.matchService = matchService;
     }
 
     @Override
     public void start() {
         List<City> cities = cityService.getAllCities();
-        List<Hotel> hotels = getHotelNames(cities);
-        hotelService.saveHotels(hotels);
+        getHotelNames(cities);
     }
 
-    public List<Hotel> getHotelNames(List<City> cities) {
-        List<Hotel> hotels = new ArrayList<>();
+    public void getHotelNames(List<City> cities) {
         for (City rawCity : cities) {
             String city = null;
             try {
@@ -89,8 +91,11 @@ public class ScrapHotelNamesMain implements Scrapper {
                             hotel.setCity(rawCity.getCity());
                             hotel.setName(hotelName);
                             hotel.setNames(names);
-                            hotel.setEachRooms(getRoomsName(url));
-                            hotels.add(hotel);
+                            Set<EachRoom> roomsName = getRoomsName(url);
+                            hotel.setEachRooms(roomsName);
+                            Match hotelMatch = getHotelMatch(hotelName);
+                            matchService.saveMatch(hotelMatch);
+                            hotelService.saveHotel(hotel);
                             log.info("###### city: " + rawCity + ", hotel: " + hotelName + " ######");
                         } else {
                             log.info("###### is empty! ######");
@@ -105,7 +110,17 @@ public class ScrapHotelNamesMain implements Scrapper {
                 }
             }
         }
-        return hotels;
+    }
+
+    private Match getHotelMatch(String hotelName) {
+        Match match = new Match();
+        match.setHotelName(hotelName);
+        Set<OTAMatch> otaMatches = new HashSet<>();
+        OTAMatch otaMatch = new OTAMatch();
+        otaMatch.setOTAname("snapptrip");
+        otaMatches.add(otaMatch);
+        match.setOTAs(otaMatches);
+        return match;
     }
 
     private Set<EachRoom> getRoomsName(String url) {
