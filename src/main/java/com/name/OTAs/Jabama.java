@@ -1,8 +1,8 @@
 package com.name.OTAs;
 
-import com.name.models.CrawledData;
-import com.name.models.OTAData;
 import com.name.models.Price;
+import com.name.models.Room;
+import com.name.models.ScrapInfo;
 import com.name.util.Crawler;
 import com.name.util.DateConverter;
 import lombok.Getter;
@@ -41,42 +41,46 @@ public class Jabama extends BaseOTA {
     }
 
     @Override
-    public Map<String, CrawledData> getRoomsData(String calledName, String city) {
-        Map<String, CrawledData> crawledDataList = new HashMap<>();
+    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
+        List<Room> rooms = new ArrayList<>();
         Date dt = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(dt);
         c.add(Calendar.DATE, 32);
         String startDate = DateConverter.getShamsidate(dt).replace("/", "");
         String endDate = DateConverter.getShamsidate(c.getTime()).replace("/", "");
-        Document htmlDocument = getHtmlDocument(createURL(calledName, startDate, endDate));
+        Map<String, Integer> roomTypes = null;
+        if (scrapInfo.getRoomTypes() != null && !scrapInfo.getRoomTypes().isEmpty())
+            roomTypes = getRoomTypes(scrapInfo.getRoomTypes());
+        Document htmlDocument = getHtmlDocument(createURL(scrapInfo.getHotelName(), startDate, endDate));
         Elements scripts = htmlDocument.getElementsByTag("script");
         for (Element script : scripts) {
             if (script.data().contains("hotelDetailResult")) {
                 JSONArray roomServices = (JSONArray) new JSONObject(script.data().replace("var hotelDetailResult =", "")).get("RoomServices");
                 for (Object roomService : roomServices) {
-                    CrawledData crawledData = new CrawledData();
+                    Room room = new Room();
                     JSONObject roomInfo = (JSONObject) roomService;
                     String roomName = (String) roomInfo.get("RoomName");
                     JSONArray roomInventory = (JSONArray) roomInfo.get("RoomInventory");
                     Set<Price> priceList = new HashSet<>();
-                    OTAData otaData = new OTAData();
                     for (Object priceAndDate : roomInventory) {
                         Price price = new Price();
                         JSONObject d = (JSONObject) priceAndDate;
                         price.setAvailable((Boolean) d.get("HasAvailability"));
-                        price.setValue(d.get("Price").toString());
-                        price.setDate((String) d.get("DateHijri"));
+                        price.setValue(((Double) Double.parseDouble(d.get("Price").toString())).intValue() / 10);
+                        price.setDate(DateConverter.JalaliToGregorian((String) d.get("DateHijri")));
                         priceList.add(price);
                     }
-                    otaData.setPrices(priceList);
-                    otaData.setRedirect(String.format(redirect, calledName));
-                    otaData.setName(getName());
-                    crawledData.setRoomName(roomName);
-                    crawledData.setOtaData(otaData);
-                    crawledDataList.put(roomName, crawledData);
+                    room.setPrices(priceList);
+                    room.setRoomName(roomName);
+                    if (roomTypes != null && roomTypes.get(roomName) != null) {
+                        room.setRoomType(roomTypes.get(roomName));
+                    } else {
+                        room.setRoomType(0);
+                    }
+                    rooms.add(room);
                 }
-                return crawledDataList;
+                return rooms;
             }
         }
         return null;

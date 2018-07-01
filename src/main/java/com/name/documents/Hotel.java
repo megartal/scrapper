@@ -13,7 +13,7 @@ import java.util.*;
 public class Hotel {
     private String id = UUID.randomUUID().toString();
     private String name;
-    private Set<Name> names = new HashSet<>();
+    private Set<ScrapInfo> scrapInfo = new HashSet<>();
     private String district;
     private String city;
     private String mainImage;
@@ -26,29 +26,5 @@ public class Hotel {
     private String mealPlan;
     private String cancelPolicy;
     private String accomType;
-    private Set<EachRoom> eachRooms = new HashSet<>();
-    private Set<Type> type1 = new HashSet<>();
-    private Set<Type> type2 = new HashSet<>();
-    private Set<Type> type3 = new HashSet<>();
-    private Set<Type> type4 = new HashSet<>();
-    private Set<Type> type5 = new HashSet<>();
-    private boolean crawl;
-    private boolean crawled;
-
-    public Set<Type> callTypeMethod(String type){
-        switch (type){
-            case "type1":
-                return type1;
-            case "type2":
-                return type2;
-            case "type3":
-                return type3;
-            case "type4":
-                return type4;
-            case "type5":
-                return type5;
-        }
-        return null;
-    }
-
+    private Set<OTAData> data = new HashSet<>();
 }

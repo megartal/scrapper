@@ -6,16 +6,16 @@ import com.name.documents.Hotel;
 import com.name.documents.Rate;
 import com.name.models.*;
 import com.name.services.HotelService;
-import com.name.services.MatchService;
 import com.name.services.RateService;
-import com.name.services.RawMatchService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -28,14 +28,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Crawler {
     private final HotelService hotelService;
-    private final RawMatchService rawMatchService;
-    private final MatchService matchService;
     private final RateService rateService;
 
-    public Crawler(HotelService hotelService, RawMatchService rawMatchService, MatchService matchService, RateService rateService) {
+    public Crawler(HotelService hotelService, RateService rateService) {
         this.hotelService = hotelService;
-        this.rawMatchService = rawMatchService;
-        this.matchService = matchService;
         this.rateService = rateService;
     }
 
@@ -44,64 +40,55 @@ public class Crawler {
         for (Hotel hotel : hotels) {
             log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
             try {
-                OTAMatch otaRoomMatch = matchService.getOTARoomMatch(hotel.getName(), ota.getName());
-                String calledName = getHotelNameCalledByOTA(hotel.getNames(), ota.getName());
-                Map<String, CrawledData> roomsData = ota.getRoomsData(calledName, hotel.getCity());
-                processData(roomsData, otaRoomMatch, ota, hotel);
+                ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
+                List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity());
+                processData(roomsData, ota, hotel, otaScrapInfo);
             } catch (Exception e) {
-                log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage() );
+                log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
                 continue;
             }
         }
     }
 
-    private void processData(Map<String, CrawledData> roomsData, OTAMatch matches, OTA ota, Hotel hotel) {
-        if (matches == null) {
-            rawMatchService.addNewRawMatch(roomsData, hotel.getName(), ota.getName());
-        } else {
-            for (RoomMatch roomMatch : matches.getRooms()) {
-                if (roomMatch.getName() != null && !roomMatch.getName().isEmpty()) {
-                    String roomType = roomMatch.getType();
-                    String mainName = roomMatch.getDroom();
-                    CrawledData crawledData = roomsData.get(roomMatch.getName());
-                    Optional<Type> found = hotel.callTypeMethod(roomType).stream().filter(x -> x.getName().equals(mainName)).findFirst();
-                    Set<Type> filteredCollect = hotel.callTypeMethod(roomType).stream().filter(x -> !x.getName().equals(mainName)).collect(Collectors.toSet());
-                    if (found.isPresent()) {
-                        Optional<OTAData> otaNeedToUpdate = found.get().getOTAs().stream().filter(x -> x.getName().equals(ota.getName())).findFirst();
-                        isChanged(hotel.getName(), ota.getName(), mainName, otaNeedToUpdate.get().getPrices(), crawledData.getOtaData().getPrices());
-                        found.get().getOTAs().remove(crawledData.getOtaData());
-                        found.get().getOTAs().add(crawledData.getOtaData());
-                        hotel.callTypeMethod(roomType).clear();
-                        filteredCollect.add(found.get());
-                        hotel.callTypeMethod(roomType).addAll(filteredCollect);
-                    } else {
-                        Type type = new Type();
-                        type.setName(mainName);
-                        type.getOTAs().add(crawledData.getOtaData());
-                        hotel.callTypeMethod(roomType).add(type);
-                    }
-                }
+    private ScrapInfo getOTAScrapInfo(Hotel hotel, String otaName) {
+        for (ScrapInfo info : hotel.getScrapInfo()) {
+            if (info.getOTAName().equals(otaName)) {
+                if (info.getHotelName().equals("empty"))
+                    throw new NullPointerException("hotel name is empty");
+                return info;
             }
-            hotelService.updateHotelPrices(hotel);
         }
+        ScrapInfo scrapInfo = new ScrapInfo(otaName, "empty", false);
+        hotel.getScrapInfo().add(scrapInfo);
+        hotelService.saveHotel(hotel);
+        throw new NullPointerException("there is no OTA info Scrapper.");
+    }
+
+    private void processData(List<Room> roomsData, OTA ota, Hotel hotel, ScrapInfo scrapInfo) {
+        Set<RoomType> roomTypes = new HashSet<>();
+        boolean isReady = true;
+        for (Room roomsDatum : roomsData) {
+            if (roomsDatum.getRoomType() == 0)
+                isReady = false;
+            roomTypes.add(new RoomType(roomsDatum.getRoomName(), roomsDatum.getRoomType()));
+        }
+        ScrapInfo newInfo = new ScrapInfo(ota.getName(), scrapInfo.getHotelName(), roomTypes, isReady);
+        hotel.getScrapInfo().remove(newInfo);
+        hotel.getScrapInfo().add(newInfo);
+        OTAData otaData = new OTAData(ota.getName(), ota.getUrlToCrawl(), new HashSet<>(roomsData));
+        hotel.getData().remove(otaData);
+        hotel.getData().add(otaData);
+        hotelService.updateHotelPrices(hotel);
     }
 
     private void isChanged(String hotelName, String otaName, String room, Set<Price> oldPrices, Set<Price> newPrices) {
         Rate rate;
-        if(Sets.symmetricDifference(oldPrices,newPrices).isEmpty()){
+        if (Sets.symmetricDifference(oldPrices, newPrices).isEmpty()) {
             rate = new Rate(new Date(), otaName, hotelName, room, false);
 
-        }else {
+        } else {
             rate = new Rate(new Date(), otaName, hotelName, room, true);
         }
-            rateService.add(rate);
-    }
-
-    private String getHotelNameCalledByOTA(Set<Name> names, String ota) {
-        for (Name name : names) {
-            if (name.getOTA().equals(ota))
-                return name.getName();
-        }
-        return null;
+        rateService.add(rate);
     }
 }

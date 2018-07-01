@@ -1,11 +1,10 @@
 package com.name.OTAs;
 
-import com.name.models.CrawledData;
-import com.name.models.OTAData;
 import com.name.models.Price;
+import com.name.models.Room;
+import com.name.models.ScrapInfo;
 import com.name.util.ApacheHttpClient;
 import com.name.util.Crawler;
-import com.name.util.DateConverter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -31,6 +30,7 @@ import java.util.*;
 @Getter
 @Slf4j
 public class Snapptrip extends BaseOTA {
+    private final Crawler crawler;
     @Value("${snapptrip.webservice}")
     private String webservice;
     @Value("${snapptrip.urlPattern}")
@@ -45,19 +45,17 @@ public class Snapptrip extends BaseOTA {
     private int sleep;
     private String name = "snapptrip";
 
-    private final Crawler crawler;
-
     public Snapptrip(Crawler crawler) {
         this.crawler = crawler;
     }
 
     @Override
-    public Map<String, CrawledData> getRoomsData(String calledName, String city) {
-        Map<String,CrawledData> crawledDataList = new HashMap<>();
-        Elements roomElements = getRoomElements(getHtmlDocument(createURL(calledName, city)), getRoomDiv());
+    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
+        List<Room> rooms = new ArrayList<>();
+        Elements roomElements = getRoomElements(getHtmlDocument(createURL(scrapInfo.getHotelName(), city)), getRoomDiv());
+        Map<String, Integer> roomTypes = getRoomTypes(scrapInfo.getRoomTypes());
         for (Element roomElement : roomElements) {
-            CrawledData crawledData = new CrawledData();
-            OTAData otaData = new OTAData();
+            Room room = new Room();
             String roomID = roomElement.attr("id").replace("room_", "");
             String html = ApacheHttpClient.getHtml(String.format(getWebservice(), roomID));
             JSONObject jsonObject = (JSONObject) new JSONObject(html).get("data");
@@ -67,19 +65,21 @@ public class Snapptrip extends BaseOTA {
             for (int i = 0; i < prices.length(); i++) {
                 Price price = new Price();
                 JSONObject obj = prices.getJSONObject(i);
-                price.setDate(DateConverter.getShamsidate(convertStringToDate((String) obj.get("date"))));
-                price.setValue(obj.get("price_off").toString());
+                price.setDate(convertStringToDate((String) obj.get("date")));
+                price.setValue(Integer.parseInt(obj.get("price_off").toString()));
                 price.setAvailable((int) obj.get("available_quantity") > 0 ? true : false);
                 priceList.add(price);
             }
-            otaData.setPrices(priceList);
-            otaData.setRedirect(getUrlToCrawl());
-            otaData.setName(getName());
-            crawledData.setRoomName(roomName);
-            crawledData.setOtaData(otaData);
-            crawledDataList.put(roomName, crawledData);
+            room.setPrices(priceList);
+            room.setRoomName(roomName);
+            if (roomTypes.get(roomName) != null) {
+                room.setRoomType(roomTypes.get(roomName));
+            } else {
+                room.setRoomType(0);
+            }
+            rooms.add(room);
         }
-        return crawledDataList;
+        return rooms;
     }
 
     private Date convertStringToDate(String dateString) {
@@ -110,7 +110,7 @@ public class Snapptrip extends BaseOTA {
 
     @Override
     public void run() {
-        while (true){
+        while (true) {
             try {
                 crawler.crawl(this);
                 Thread.sleep(sleep);

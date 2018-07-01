@@ -1,14 +1,17 @@
 package com.name.OTAs;
 
-import com.name.models.CrawledData;
+import com.name.models.Room;
+import com.name.models.ScrapInfo;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @Author Akbar
  * @DATE 5/19/2018.
  */
 public interface OTA extends Runnable{
-    Map<String, CrawledData> getRoomsData(String calledName, String city);
+    List<Room> getRoomsData(ScrapInfo scrapInfo, String city);
     String getName();
+
+    String getUrlToCrawl();
 }

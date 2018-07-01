@@ -4,7 +4,7 @@ import com.name.documents.Hotel;
 import com.name.models.Amenity;
 import com.name.models.Image;
 import com.name.models.Location;
-import com.name.models.Name;
+import com.name.models.ScrapInfo;
 import com.name.services.HotelService;
 import com.name.util.ApacheHttpClient;
 import lombok.extern.slf4j.Slf4j;
@@ -138,10 +138,10 @@ public class HotelInfoScrapperMain implements Scrapper {
         List<Hotel> hotels = hotelService.getAllHotels();
         Map<Hotel, String> urls = new HashMap<>();
         for (Hotel hotel : hotels) {
-            Set<Name> names = hotel.getNames();
-            for (Name result : names) {
-                if (result.getOTA().equals("jabama")) {
-                    urls.put(hotel, String.format(url, (String) result.getName()));
+            Set<ScrapInfo> names = hotel.getScrapInfo();
+            for (ScrapInfo result : names) {
+                if (result.getOTAName().equals("jabama")) {
+                    urls.put(hotel, String.format(url, (String) result.getOTAName()));
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.name.util;
 
+import ir.huri.jcal.JalaliCalendar;
+
 import java.util.Date;
 import java.util.Locale;
 
@@ -8,6 +10,28 @@ import java.util.Locale;
  * @DATE 5/20/2018.
  */
 public class DateConverter {
+
+    public static String getCurrentShamsidate() {
+        Locale loc = new Locale("en_US");
+        DateConverter util = new DateConverter();
+        SolarCalendar sc = util.new SolarCalendar();
+        return String.valueOf(sc.year) + "/" + String.format(loc, "%02d",
+                sc.month) + "/" + String.format(loc, "%02d", sc.date);
+    }
+
+    public static String getShamsidate(Date date) {
+        Locale loc = new Locale("en_US");
+        DateConverter util = new DateConverter();
+        SolarCalendar sc = util.new SolarCalendar(date);
+        return String.valueOf(sc.year) + "/" + String.format(loc, "%02d",
+                sc.month) + "/" + String.format(loc, "%02d", sc.date);
+    }
+
+    public static Date JalaliToGregorian(String shamsiDate) {
+        String[] split = shamsiDate.split("/");
+        JalaliCalendar jalaliCalendar = new JalaliCalendar(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+        return jalaliCalendar.toGregorian().getTime();
+    }
 
     private class SolarCalendar {
 
@@ -243,22 +267,6 @@ public class DateConverter {
 
         }
 
-    }
-
-    public static String getCurrentShamsidate() {
-        Locale loc = new Locale("en_US");
-        DateConverter util = new DateConverter();
-        SolarCalendar sc = util.new SolarCalendar();
-        return String.valueOf(sc.year) + "/" + String.format(loc, "%02d",
-                sc.month) + "/" + String.format(loc, "%02d", sc.date);
-    }
-
-    public static String getShamsidate(Date date) {
-        Locale loc = new Locale("en_US");
-        DateConverter util = new DateConverter();
-        SolarCalendar sc = util.new SolarCalendar(date);
-        return String.valueOf(sc.year) + "/" + String.format(loc, "%02d",
-                sc.month) + "/" + String.format(loc, "%02d", sc.date);
     }
 
 }

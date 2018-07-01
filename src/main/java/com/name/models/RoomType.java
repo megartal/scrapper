@@ -1,15 +1,17 @@
 package com.name.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * @Author Akbar
- * @DATE 5/20/2018.
+ * @DATE 7/1/2018.
  */
 @Getter
 @Setter
-public class CrawledData {
+@AllArgsConstructor
+public class RoomType {
     private String roomName;
-    private OTAData otaData;
+    private int type;
 }
