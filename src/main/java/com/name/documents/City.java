@@ -16,10 +16,10 @@ import java.util.UUID;
 public class City{
     private String id = UUID.randomUUID().toString();
     private String city;
-    private String province;
+    private String district;
 
-    public City(String city, String province) {
+    public City(String city, String district) {
         this.city = city;
-        this.province = province;
+        this.district = district;
     }
 }

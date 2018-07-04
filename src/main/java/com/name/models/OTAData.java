@@ -15,9 +15,9 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 public class OTAData {
-    String redirect;
-    Set<Room> rooms = new HashSet<>();
     private String OTAName;
+    private String redirect;
+    private Set<Room> rooms = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

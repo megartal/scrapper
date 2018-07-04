@@ -84,7 +84,7 @@ public class Snapptrip extends BaseOTA {
 
     private Date convertStringToDate(String dateString) {
         Date date = null;
-        DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         try {
             date = df.parse(dateString);
         } catch (Exception ex) {
