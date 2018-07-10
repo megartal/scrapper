@@ -13,5 +13,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Amenity {
     private String name;
-    private boolean value;
+    private String icon;
 }

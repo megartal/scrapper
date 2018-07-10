@@ -22,20 +22,20 @@ import java.util.*;
  * Created by Akbar on 2/19/2018.
  */
 @Service
-@Profile({"info"})
+@Profile({"jabamainfo"})
 @Slf4j
-public class HotelInfoScrapperMain implements Scrapper {
+public class JabamaHotelInfoScrapperMain implements Scrapper {
 
     private final HotelService hotelService;
-    @Value("${jabama.xpath}")
+    @Value("${xpath}")
     String xpath;
-    @Value("${jabama.url}")
+    @Value("${url}")
     private String urlFormat;
 
     @Value("${jainjas.url}")
     private String jainastUrlFormat;
 
-    public HotelInfoScrapperMain(HotelService hotelService) {
+    public JabamaHotelInfoScrapperMain(HotelService hotelService) {
         this.hotelService = hotelService;
     }
 
@@ -96,7 +96,7 @@ public class HotelInfoScrapperMain implements Scrapper {
             Set<Amenity> amenities = new HashSet<>();
             for (Object feature : amenityFeature) {
                 JSONObject obj = new JSONObject(feature.toString());
-                Amenity amenity = new Amenity((String) obj.get("name"), (boolean) obj.get("value"));
+                Amenity amenity = new Amenity((String) obj.get("name"), (String) obj.get("value"));
                 amenities.add(amenity);
             }
             hotel.setAmenities(amenities);

@@ -19,6 +19,11 @@ public class Hotel {
     private String mainImage;
     private List<Image> images = new ArrayList<>();
     private String address;
+    private String category;
+    private String warning;
+    private String information;
+    private String rules;
+    private Integer grade;
     private Integer stars;
     private String description;
     private Set<Amenity> amenities = new HashSet<>();
