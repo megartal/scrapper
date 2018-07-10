@@ -15,5 +15,7 @@ import java.util.Set;
 public class Room {
     private String roomName;
     private int roomType;
+    private String roomId;
+    private String meta;
     private Set<Price> prices = new HashSet<>();
 }

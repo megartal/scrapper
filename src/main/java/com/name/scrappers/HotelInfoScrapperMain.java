@@ -36,7 +36,7 @@ public class HotelInfoScrapperMain implements Scrapper {
         this.hotelService = hotelService;
     }
 
-    private void extractInfo(Hotel hotel, String url) {
+    private void extractInfo(Hotel hotel, String url) throws Exception {
         String html = ApacheHttpClient.getHtml(url);
         Document doc = Jsoup.parse(html);
         String data = doc.select(xpath).get(0).data();
@@ -141,7 +141,7 @@ public class HotelInfoScrapperMain implements Scrapper {
             Set<ScrapInfo> names = hotel.getScrapInfo();
             for (ScrapInfo result : names) {
                 if (result.getOTAName().equals("jabama")) {
-                    urls.put(hotel, String.format(url, (String) result.getOTAName()));
+                    urls.put(hotel, String.format(url, (String) result.getHotelName()));
                 }
             }
         }
@@ -151,7 +151,12 @@ public class HotelInfoScrapperMain implements Scrapper {
     public void start() {
         Map<Hotel, String> hotels = prepareHotels(urlFormat);
         for (Map.Entry<Hotel, String> hotel : hotels.entrySet()) {
-            extractInfo(hotel.getKey(), hotel.getValue());
+            try {
+                extractInfo(hotel.getKey(), hotel.getValue());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                continue;
+            }
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {

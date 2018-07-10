@@ -43,6 +43,7 @@ public class Crawler {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity());
                 processData(roomsData, ota, hotel, otaScrapInfo);
+                Thread.sleep(3000);
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
                 continue;

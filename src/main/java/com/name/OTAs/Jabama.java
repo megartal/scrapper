@@ -61,6 +61,9 @@ public class Jabama extends BaseOTA {
                     Room room = new Room();
                     JSONObject roomInfo = (JSONObject) roomService;
                     String roomName = (String) roomInfo.get("RoomName");
+//                    String roomServiceId = (String) roomInfo.get("RoomServiceId");
+//                    String roomId = (String) roomInfo.get("RoomId");
+//                    String coins = (String) roomInfo.get("Coins");
                     JSONArray roomInventory = (JSONArray) roomInfo.get("RoomInventory");
                     Set<Price> priceList = new HashSet<>();
                     for (Object priceAndDate : roomInventory) {
@@ -72,6 +75,8 @@ public class Jabama extends BaseOTA {
                         priceList.add(price);
                     }
                     room.setPrices(priceList);
+//                    room.setRoomId("rc"+roomId+"-"+roomServiceId);
+//                    room.setMeta(coins);
                     room.setRoomName(roomName);
                     if (roomTypes != null && roomTypes.get(roomName) != null) {
                         room.setRoomType(roomTypes.get(roomName));
