@@ -7,6 +7,8 @@ import com.name.util.ApacheHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,14 @@ public class JainjastHotelInfoScrapperMain implements Scrapper {
     }
 
     private void extractInfo(Hotel hotel, String url) throws Exception {
-        String html = ApacheHttpClient.getHtml(url);
+        String html1 = ApacheHttpClient.getHtml(url);
+        Document doc1 = Jsoup.parse(html1);
+        Elements script = doc1.getElementsByTag("script");
+        for (Element element : script) {
+            Elements type = element.getElementsByAttributeValue("type", "text/javascript");
+        }
+
+        String html = ApacheHttpClient.postRequest(url, "{\"placeId\":\"%s\",\"from\":\"%s\",\"to\":\"%s\"} ");
         Document doc = Jsoup.parse(html);
 
         hotelService.saveHotel(hotel);
