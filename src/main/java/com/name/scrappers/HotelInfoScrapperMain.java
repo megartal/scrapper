@@ -27,10 +27,13 @@ import java.util.*;
 public class HotelInfoScrapperMain implements Scrapper {
 
     private final HotelService hotelService;
-    @Value("${xpath}")
+    @Value("${jabama.xpath}")
     String xpath;
-    @Value("${url}")
+    @Value("${jabama.url}")
     private String urlFormat;
+
+    @Value("${jainjas.url}")
+    private String jainastUrlFormat;
 
     public HotelInfoScrapperMain(HotelService hotelService) {
         this.hotelService = hotelService;
@@ -59,7 +62,7 @@ public class HotelInfoScrapperMain implements Scrapper {
         }
 
 
-        String baseURL = "https://images.jabama.co/";
+        String baseURL = "https://images.jabama.com/";
         try {
             ArrayList<Image> images = new ArrayList<>();
             JSONArray imgs = new JSONArray(new JSONObject(doc.select("script").get(8).data().replace("var hotelDetailResult = ", "")).get("Images").toString());
