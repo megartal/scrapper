@@ -82,15 +82,15 @@ public class JainjasHotelInfoScrapperMain implements Scrapper {
             String placeCategoryName = (String) jsonObject.get("PlaceCategoryKey");
             hotel.setCategory(placeCategoryName);
 
-            //address
-            String addressLine1 = (String) jsonObject.get("AddressLine1");
-            String addressLine2 = (String) jsonObject.get("AddressLine2");
-            String address = addressLine1 + "\n" + addressLine2;
-            hotel.setAddress(address);
+//            //address
+//            String addressLine1 = (String) jsonObject.get("AddressLine1");
+//            String addressLine2 = (String) jsonObject.get("AddressLine2");
+//            String address = addressLine1 + "\n" + addressLine2;
+//            hotel.setAddress(address);
 
-            //description
-            String description = (String) jsonObject.get("Description");
-            hotel.setDescription(description);
+//            //description
+//            String description = (String) jsonObject.get("Description");
+//            hotel.setDescription(description);
 
             //location
             Location location = new Location(((Double) jsonObject.get("Latitude")).toString(), ((Double) jsonObject.get("Longitude")).toString());
