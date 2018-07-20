@@ -17,6 +17,7 @@ public class City{
     private String id = UUID.randomUUID().toString();
     private String city;
     private String district;
+    private boolean crawl;
 
     public City(String city, String district) {
         this.city = city;

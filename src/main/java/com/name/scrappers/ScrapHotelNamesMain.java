@@ -45,7 +45,6 @@ public class ScrapHotelNamesMain implements Scrapper {
     @Value("${hotel_name_scrapper.webservice}")
     private String webservice;
 
-
     public ScrapHotelNamesMain(CityService cityService, HotelService hotelService) {
         this.cityService = cityService;
         this.hotelService = hotelService;
@@ -95,6 +94,7 @@ public class ScrapHotelNamesMain implements Scrapper {
                     e.printStackTrace();
                 }
             }
+            cityService.updateCity(rawCity);
         }
     }
 

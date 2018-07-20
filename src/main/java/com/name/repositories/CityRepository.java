@@ -4,6 +4,7 @@ import com.name.documents.City;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,4 +16,6 @@ public interface CityRepository  extends MongoRepository<City, String> {
     Optional<City> findByCity(String city);
 
     Optional<City> deleteByCity(String city);
+
+    List<City> findByCrawl(boolean b);
 }

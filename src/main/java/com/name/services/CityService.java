@@ -19,6 +19,12 @@ public class CityService {
     }
 
     public List<City> getAllCities() {
-        return cityRepository.findAll();
+        return cityRepository.findByCrawl(true);
+    }
+
+    public void updateCity(City crawledCity) {
+        City city = cityRepository.findByCity(crawledCity.getCity()).get();
+        city.setCrawl(false);
+        cityRepository.save(city);
     }
 }
