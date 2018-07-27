@@ -48,6 +48,7 @@ public class ImageDownloader implements Scrapper {
                     src = src.replace("/", "-");
 //                    Files.copy(in, Paths.get("C:\\Users\\Alex\\WebstormProjects\\diringo\\public\\images\\hotels\\" + src ));
                     Files.copy(in, Paths.get("/home/ara/node-apps/ara/public/images/hotels/" + src));
+                    log.info(src);
                     Thread.sleep(4000);
                 } catch (IOException e) {
                     e.printStackTrace();
