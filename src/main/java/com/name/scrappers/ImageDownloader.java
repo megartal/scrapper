@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -36,6 +35,9 @@ public class ImageDownloader implements Scrapper {
     @Override
     public void start() {
         List<City> cities = cityService.getAllCities();
+//        String filPath = "/home/ara/node-apps/ara/public/images/hotels/";
+        String filPath = "C:\\Users\\Alex\\WebstormProjects\\diringo\\public\\images\\hotels\\";
+
         List<String> nameOfCities = new ArrayList<>();
         cities.stream().forEach(x -> nameOfCities.add(x.getCity()));
         List<Hotel> hotels = hotelService.getAllHotelsOfCity(nameOfCities);
@@ -46,14 +48,16 @@ public class ImageDownloader implements Scrapper {
                 try {
                     InputStream in = ApacheHttpClient.getImageWithoutSSLCertificate(url);
                     src = src.replace("/", "-");
-//                    Files.copy(in, Paths.get("C:\\Users\\Alex\\WebstormProjects\\diringo\\public\\images\\hotels\\" + src ));
-                    Files.copy(in, Paths.get("/home/ara/node-apps/ara/public/images/hotels/" + src));
-                    log.info(src);
+                    if (Files.isReadable(Paths.get(filPath + src))) {
+                        continue;
+                    } else {
+                        Files.copy(in, Paths.get(filPath + src));
+                        log.info(src);
+                    }
                     Thread.sleep(4000);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    continue;
                 }
             }
         }
