@@ -35,8 +35,8 @@ public class ImageDownloader implements Scrapper {
     @Override
     public void start() {
         List<City> cities = cityService.getAllCities();
-//        String filPath = "/home/ara/node-apps/ara/public/images/hotels/";
-        String filPath = "C:\\Users\\Alex\\WebstormProjects\\diringo\\public\\images\\hotels\\";
+        String filPath = "/home/ara/node-apps/ara/public/images/hotels/";
+//        String filPath = "C:\\Users\\Alex\\WebstormProjects\\diringo\\public\\images\\hotels\\";
 
         List<String> nameOfCities = new ArrayList<>();
         cities.stream().forEach(x -> nameOfCities.add(x.getCity()));
