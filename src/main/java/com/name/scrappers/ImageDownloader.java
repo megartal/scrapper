@@ -49,6 +49,7 @@ public class ImageDownloader implements Scrapper {
                     InputStream in = ApacheHttpClient.getImageWithoutSSLCertificate(url);
                     src = src.replace("/", "-");
                     if (Files.isReadable(Paths.get(filPath + src))) {
+                        log.info(src + "already there");
                         continue;
                     } else {
                         Files.copy(in, Paths.get(filPath + src));
