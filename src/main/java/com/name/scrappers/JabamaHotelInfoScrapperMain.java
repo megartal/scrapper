@@ -1,7 +1,9 @@
 package com.name.scrappers;
 
+import com.name.documents.City;
 import com.name.documents.Hotel;
 import com.name.models.ScrapInfo;
+import com.name.services.CityService;
 import com.name.services.HotelService;
 import com.name.util.ApacheHttpClient;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Akbar on 2/19/2018.
@@ -26,13 +25,15 @@ import java.util.Set;
 public class JabamaHotelInfoScrapperMain implements Scrapper {
 
     private final HotelService hotelService;
+    private final CityService cityService;
     @Value("${xpath}")
     String xpath;
     @Value("${url}")
     private String urlFormat;
 
-    public JabamaHotelInfoScrapperMain(HotelService hotelService) {
+    public JabamaHotelInfoScrapperMain(HotelService hotelService, CityService cityService) {
         this.hotelService = hotelService;
+        this.cityService = cityService;
     }
 
     private void extractInfo(Hotel hotel, String url) throws Exception {
@@ -130,11 +131,15 @@ public class JabamaHotelInfoScrapperMain implements Scrapper {
         } catch (Exception e) {
             log.error(hotel.getName() + "###main image failed!!!");
         }
+        log.info(hotel.getName());
         hotelService.saveHotel(hotel);
     }
 
     private Map<Hotel, String> prepareHotels(String url) {
-        List<Hotel> hotels = hotelService.getAllHotels();
+        List<City> cities = cityService.getAllCities();
+        List<String> nameOfCities = new ArrayList<>();
+        cities.stream().forEach(x -> nameOfCities.add(x.getCity()));
+        List<Hotel> hotels = hotelService.getAllHotelsOfCity(nameOfCities);
         Map<Hotel, String> urls = new HashMap<>();
         for (Hotel hotel : hotels) {
             Set<ScrapInfo> names = hotel.getScrapInfo();

@@ -30,8 +30,8 @@ public class Jabama extends BaseOTA {
     private final Crawler crawler;
     @Value("${jabama.urlPattern}")
     private String urlPattern;
-    @Value("${jabama.redirect}")
-    private String redirect;
+    @Value("${jabama.userRedirect}")
+    private String urlUsreRedirect;
     @Value("${jabama.sleep}")
     private int sleep;
     private String name = "jabama";
@@ -58,6 +58,7 @@ public class Jabama extends BaseOTA {
             if (script.data().contains("hotelDetailResult")) {
                 JSONArray roomServices = (JSONArray) new JSONObject(script.data().replace("var hotelDetailResult =", "")).get("RoomServices");
                 for (Object roomService : roomServices) {
+                    int roomType = (Integer) ((JSONObject) roomService).get("Capacity");
                     Room room = new Room();
                     JSONObject roomInfo = (JSONObject) roomService;
                     String roomName = (String) roomInfo.get("RoomName");
@@ -78,11 +79,7 @@ public class Jabama extends BaseOTA {
 //                    room.setRoomId("rc"+roomId+"-"+roomServiceId);
 //                    room.setMeta(coins);
                     room.setRoomName(roomName);
-                    if (roomTypes != null && roomTypes.get(roomName) != null) {
-                        room.setRoomType(roomTypes.get(roomName));
-                    } else {
-                        room.setRoomType(0);
-                    }
+                    room.setRoomType(roomType);
                     rooms.add(room);
                 }
                 return rooms;
@@ -92,8 +89,8 @@ public class Jabama extends BaseOTA {
     }
 
     private String createURL(String calledName, String startDate, String endDate) {
-        setUrlToCrawl(String.format(getUrlPattern(), calledName, startDate, endDate));
-        return getUrlToCrawl();
+        setUrlToCrawl(String.format(getUrlUsreRedirect(), calledName));
+        return String.format(getUrlPattern(), calledName, startDate, endDate);
     }
 
     @Override

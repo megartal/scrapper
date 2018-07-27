@@ -4,7 +4,7 @@ import com.name.documents.City;
 import com.name.documents.Hotel;
 import com.name.models.ScrapInfo;
 import com.name.repositories.CityRepository;
-import com.name.repositories.HotelRepository;
+import com.name.repositories.hotel.HotelRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 

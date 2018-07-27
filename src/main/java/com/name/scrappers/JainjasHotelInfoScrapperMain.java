@@ -1,10 +1,12 @@
 package com.name.scrappers;
 
+import com.name.documents.City;
 import com.name.documents.Hotel;
 import com.name.models.Amenity;
 import com.name.models.Image;
 import com.name.models.Location;
 import com.name.models.ScrapInfo;
+import com.name.services.CityService;
 import com.name.services.HotelService;
 import com.name.util.ApacheHttpClient;
 import com.name.util.DateConverter;
@@ -28,15 +30,17 @@ import java.util.*;
 @Slf4j
 public class JainjasHotelInfoScrapperMain implements Scrapper {
     private final HotelService hotelService;
+    private final CityService cityService;
     @Value("${url}")
     private String jainastUrlFormat;
 
-    public JainjasHotelInfoScrapperMain(HotelService hotelService) {
+    public JainjasHotelInfoScrapperMain(HotelService hotelService, CityService cityService) {
         this.hotelService = hotelService;
+        this.cityService = cityService;
     }
 
     private void extractInfo(Hotel hotel, String url) throws Exception {
-        if (url.contains("empty"))
+        if (url.contains("nist"))
             return;
         try {
             String html1 = ApacheHttpClient.getHtmlWithoutSSLCertificate(url);
@@ -53,10 +57,12 @@ public class JainjasHotelInfoScrapperMain implements Scrapper {
             String shamsidateAfter2Days = DateConverter.getShamsidate(dt);
             String params = "placeId=" + modelId + "&from=" + currentShamsidate + "&to=" + shamsidateAfter2Days;
             String jsonResult = ApacheHttpClient.postRequest("https://jainjas.com/Place/Rooms", params);
+            String jsonResult2 = ApacheHttpClient.getHtmlWithoutSSLCertificate("https://jainjas.com/Place/GetPlaceDetail?placeId=" + modelId + "&from=%DB%B1%DB%B3%DB%B9%DB%B7/%DB%B0%DB%B5/%DB%B0%DB%B4&to=%DB%B1%DB%B3%DB%B9%DB%B7/%DB%B0%DB%B5/%DB%B0%DB%B6");
             JSONObject jsonObject = new JSONObject(jsonResult);
+            JSONObject jsonObject2 = new JSONObject(jsonResult2);
 
             //amenities
-            JSONArray placeAttributes = new JSONArray(jsonObject.get("PlaceAttributes").toString());
+            JSONArray placeAttributes = new JSONArray(jsonObject2.get("PlaceAttributes").toString());
             Set<Amenity> amenities = new HashSet<>();
             for (Object placeAttribute : placeAttributes) {
                 JSONObject amenity = (JSONObject) (((JSONObject) placeAttribute).get("AttributeDefinition"));
@@ -65,22 +71,26 @@ public class JainjasHotelInfoScrapperMain implements Scrapper {
             hotel.setAmenities(amenities);
 
             //images
-            JSONArray placeImages = new JSONArray(jsonObject.get("PlaceImages").toString());
+            JSONArray placeImages = new JSONArray(jsonObject2.get("PlaceImages").toString());
             ArrayList<Image> images = new ArrayList<>();
             for (Object placeImage : placeImages) {
-                String fileSrc = (String) ((JSONObject) placeImage).get("FileSrc");
+                String fileSrc = ((JSONObject) placeImage).get("PlaceId") + "/" + ((JSONObject) placeImage).get("FileName");
                 String description = (String) ((JSONObject) placeImage).get("Description");
                 images.add(new Image(fileSrc, description));
             }
             hotel.setImages(images);
 
             //star
-            Integer star = (Integer) jsonObject.get("Class");
-            hotel.setStars(star);
+            if (!jsonObject.isNull("Class")) {
+                Integer star = (Integer) jsonObject.get("Class");
+                hotel.setStars(star);
+            }
 
             //category
-            String placeCategoryName = (String) jsonObject.get("PlaceCategoryKey");
-            hotel.setCategory(placeCategoryName);
+            if (!jsonObject.isNull("PlaceCategoryKey")) {
+                String placeCategoryName = (String) jsonObject.get("PlaceCategoryKey");
+                hotel.setCategory(placeCategoryName);
+            }
 
 //            //address
 //            String addressLine1 = (String) jsonObject.get("AddressLine1");
@@ -93,28 +103,41 @@ public class JainjasHotelInfoScrapperMain implements Scrapper {
 //            hotel.setDescription(description);
 
             //location
-            Location location = new Location(((Double) jsonObject.get("Latitude")).toString(), ((Double) jsonObject.get("Longitude")).toString());
-            hotel.setLocation(location);
+            if (!jsonObject.isNull("Latitude") && !jsonObject.isNull("Longitude")) {
+                Location location = new Location(((Double) jsonObject.get("Latitude")).toString(), ((Double) jsonObject.get("Longitude")).toString());
+                hotel.setLocation(location);
+            }
 
             //warnings
-            String warnings = (String) jsonObject.get("Warnings");
-            hotel.setWarning(warnings);
+            if (!jsonObject.isNull("Warnings")) {
+                String warnings = (String) jsonObject.get("Warnings");
+                hotel.setWarning(warnings);
+            }
+
 
             //information
-            String information = (String) jsonObject.get("Information");
-            hotel.setInformation(information);
+            if (!jsonObject.isNull("Information")) {
+                String information = (String) jsonObject.get("Information");
+                hotel.setInformation(information);
+            }
 
             //regulations
-            String rules = (String) jsonObject.get("RulesAndRegulation");
-            hotel.setRules(rules);
+            if (!jsonObject.isNull("RulesAndRegulation")) {
+                String rules = (String) jsonObject.get("RulesAndRegulation");
+                hotel.setRules(rules);
+            }
 
             //grade
-            Integer grade = (Integer) jsonObject.get("Grade");
-            hotel.setGrade(grade);
+            if (!jsonObject.isNull("Grade")) {
+                Integer grade = (Integer) jsonObject.get("Grade");
+                hotel.setGrade(grade);
+            }
+
         } catch (Exception e) {
             log.error(e.getMessage(), e.getCause());
         }
 
+        log.info(hotel.getName());
         hotelService.saveHotel(hotel);
     }
 
@@ -129,7 +152,7 @@ public class JainjasHotelInfoScrapperMain implements Scrapper {
                 continue;
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -138,7 +161,10 @@ public class JainjasHotelInfoScrapperMain implements Scrapper {
 
 
     private Map<Hotel, String> prepareHotels(String url) {
-        List<Hotel> hotels = hotelService.getAllHotels();
+        List<City> cities = cityService.getAllCities();
+        List<String> nameOfCities = new ArrayList<>();
+        cities.stream().forEach(x -> nameOfCities.add(x.getCity()));
+        List<Hotel> hotels = hotelService.getAllHotelsOfCity(nameOfCities);
         Map<Hotel, String> urls = new HashMap<>();
         for (Hotel hotel : hotels) {
             Set<ScrapInfo> names = hotel.getScrapInfo();

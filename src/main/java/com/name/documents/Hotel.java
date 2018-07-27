@@ -11,6 +11,11 @@ import java.util.*;
 @Getter
 @Setter
 public class Hotel {
+    public static final String DOCUMENT = "hotel";
+    public static final String CITY = "city";
+    public static final String DISTRICT = "district";
+    public static final String NAME = "name";
+
     private String id = UUID.randomUUID().toString();
     private String name;
     private Set<ScrapInfo> scrapInfo = new HashSet<>();

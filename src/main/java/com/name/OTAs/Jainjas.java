@@ -30,7 +30,7 @@ public class Jainjas extends BaseOTA {
     private final Crawler crawler;
     @Value("${jainjas.urlPattern}")
     private String jainastUrlFormat;
-    @Value("${snapptrip.sleep}")
+    @Value("${jainjas.sleep}")
     private int sleep;
     private String name = "jainjas";
 
@@ -41,7 +41,7 @@ public class Jainjas extends BaseOTA {
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
         try {
-            String html1 = ApacheHttpClient.getHtmlWithoutSSLCertificate("https://jainjas.com/hotel_eram-kish-hotel");
+            String html1 = ApacheHttpClient.getHtmlWithoutSSLCertificate(createURL(scrapInfo.getHotelName()));
             Document doc1 = Jsoup.parse(html1);
             String[] values = doc1.getElementsByAttributeValue("type", "text/javascript").get(0).data().split(";");
             String value = values[3];
@@ -66,9 +66,9 @@ public class Jainjas extends BaseOTA {
                 JSONArray roomPrices = (JSONArray) ((JSONObject) room).get("RoomPrices");
                 Set<Price> prices = new HashSet<>();
                 for (Object roomPrice : roomPrices) {
-                    String date = (String) (((JSONObject) room).get("Date"));
-                    Integer price = (Integer) (((JSONObject) room).get("PassengerPrice"));
-                    Integer availableNumber = (Integer) (((JSONObject) room).get("AvailableNumber"));
+                    String date = (String) (((JSONObject) roomPrice).get("Date"));
+                    Integer price = (Integer) (((JSONObject) roomPrice).get("PassengerPrice"));
+                    Integer availableNumber = (Integer) (((JSONObject) roomPrice).get("AvailableNumber"));
                     boolean available = false;
                     if (availableNumber > 0)
                         available = true;
@@ -81,6 +81,11 @@ public class Jainjas extends BaseOTA {
             log.error(e.getMessage(), e.getCause());
         }
         return null;
+    }
+
+    private String createURL(String hotelName) {
+        setUrlToCrawl(String.format(jainastUrlFormat, hotelName));
+        return getUrlToCrawl();
     }
 
     @Override

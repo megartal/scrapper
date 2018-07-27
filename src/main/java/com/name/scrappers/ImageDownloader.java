@@ -1,17 +1,20 @@
 package com.name.scrappers;
 
+import com.name.documents.City;
 import com.name.documents.Hotel;
 import com.name.models.Image;
+import com.name.services.CityService;
 import com.name.services.HotelService;
+import com.name.util.ApacheHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,23 +26,32 @@ import java.util.List;
 @Profile("images")
 public class ImageDownloader implements Scrapper {
     private final HotelService hotelService;
+    private final CityService cityService;
 
-    public ImageDownloader(HotelService hotelService) {
+    public ImageDownloader(HotelService hotelService, CityService cityService) {
         this.hotelService = hotelService;
+        this.cityService = cityService;
     }
 
     @Override
     public void start() {
-        List<Hotel> hotels = hotelService.getAllHotels();
+        List<City> cities = cityService.getAllCities();
+        List<String> nameOfCities = new ArrayList<>();
+        cities.stream().forEach(x -> nameOfCities.add(x.getCity()));
+        List<Hotel> hotels = hotelService.getAllHotelsOfCity(nameOfCities);
         for (Hotel hotel : hotels) {
             for (Image image : hotel.getImages()) {
                 String src = image.getSrc();
-                src = src.replace("co", "com");
-                String file = src.replace("https://images.jabama.com/", "");
+                String url = "https://jainjas.com/storage/images/place/" + src;
                 try {
-                    InputStream in = new URL(src).openStream();
-                    Files.copy(in, Paths.get("C:\\Users\\Administrator\\Documents\\images\\" + file + ".jpg"));
+                    InputStream in = ApacheHttpClient.getImageWithoutSSLCertificate(url);
+                    src = src.replace("/", "-");
+//                    Files.copy(in, Paths.get("C:\\Users\\Alex\\WebstormProjects\\diringo\\public\\images\\hotels\\" + src ));
+                    Files.copy(in, Paths.get("/home/ara/node-apps/ara/public/images/hotels/" + src));
+                    Thread.sleep(5000);
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }

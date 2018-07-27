@@ -1,7 +1,7 @@
 package com.name.services;
 
 import com.name.documents.Hotel;
-import com.name.repositories.HotelRepository;
+import com.name.repositories.hotel.HotelRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,5 +32,9 @@ public class HotelService {
 
     public void saveHotel(Hotel hotelToPersist) {
         hotelRepository.save(hotelToPersist);
+    }
+
+    public List<Hotel> getAllHotelsOfCity(List<String> cities) {
+        return hotelRepository.findAllByCities(cities);
     }
 }

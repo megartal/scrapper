@@ -94,7 +94,7 @@ public class ScrapHotelNamesMain implements Scrapper {
                     e.printStackTrace();
                 }
             }
-            cityService.updateCity(rawCity);
+//            cityService.updateCity(rawCity);
         }
     }
 

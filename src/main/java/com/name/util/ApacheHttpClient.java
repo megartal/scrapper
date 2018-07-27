@@ -99,6 +99,27 @@ public class ApacheHttpClient {
         return null;
     }
 
+    public static InputStream getImageWithoutSSLCertificate(String s) {
+        // configure the SSLContext with a TrustManager
+        try {
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(new KeyManager[0], new TrustManager[]{new DefaultTrustManager()}, new SecureRandom());
+            URL url = new URL(s);
+            CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+
+            conn.setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String arg0, SSLSession arg1) {
+                    return true;
+                }
+            });
+            return conn.getInputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     private static class DefaultTrustManager implements X509TrustManager {
 
         @Override
