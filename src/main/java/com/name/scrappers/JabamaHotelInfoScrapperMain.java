@@ -155,7 +155,7 @@ public class JabamaHotelInfoScrapperMain implements Scrapper {
     public void start() {
         Map<Hotel, String> hotels = prepareHotels(urlFormat);
         for (Map.Entry<Hotel, String> hotel : hotels.entrySet()) {
-            if (hotel.getKey().getMainImage() == null) {
+            if (hotel.getKey().getMainImage() != null) {
                 log.info("continue");
                 continue;
             }
