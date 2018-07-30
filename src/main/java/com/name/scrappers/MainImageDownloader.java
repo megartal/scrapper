@@ -33,34 +33,38 @@ public class MainImageDownloader implements Scrapper {
 
     @Override
     public void start() {
-        List<City> cities = cityService.getAllCities();
-        String filPath = "/home/ara/node-apps/ara/public/images/hotels/";
+        try {
+            List<City> cities = cityService.getAllCities();
+            String filPath = "/home/ara/node-apps/ara/public/images/hotels/";
 //        String filPath = "C:\\Users\\Alex\\WebstormProjects\\diringo\\public\\images\\hotels\\";
 
-        List<String> nameOfCities = new ArrayList<>();
-        cities.stream().forEach(x -> nameOfCities.add(x.getCity()));
-        List<Hotel> hotels = hotelService.getAllHotelsOfCity(nameOfCities);
-        for (Hotel hotel : hotels) {
-            String url = hotel.getMainImage();
-            if (url == null)
-                continue;
-            try {
-                url = url.replace("https://images.jabama.com/", "mainImage-");
-                url = url + ".jpg";
-                if (Files.isReadable(Paths.get(filPath + url))) {
-                    log.info(url + "already there");
+            List<String> nameOfCities = new ArrayList<>();
+            cities.stream().forEach(x -> nameOfCities.add(x.getCity()));
+            List<Hotel> hotels = hotelService.getAllHotelsOfCity(nameOfCities);
+            for (Hotel hotel : hotels) {
+                String url = hotel.getMainImage();
+                if (url == null)
                     continue;
-                } else {
-                    InputStream in = ApacheHttpClient.getImageWithoutSSLCertificate(url);
-                    Files.copy(in, Paths.get(filPath + url));
-                    log.info(url);
+                try {
+                    url = url.replace("https://images.jabama.com/", "mainImage-");
+                    url = url + ".jpg";
+                    if (Files.isReadable(Paths.get(filPath + url))) {
+                        log.info(url + "already there");
+                        continue;
+                    } else {
+                        InputStream in = ApacheHttpClient.getImageWithoutSSLCertificate(url);
+                        Files.copy(in, Paths.get(filPath + url));
+                        log.info(url);
+                    }
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
                 }
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
-            }
 
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
     }
 }
