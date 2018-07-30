@@ -40,7 +40,7 @@ public class MainImageDownloader implements Scrapper {
 
             List<String> nameOfCities = new ArrayList<>();
             cities.stream().forEach(x -> nameOfCities.add(x.getCity()));
-            List<Hotel> hotels = hotelService.getAllHotelsOfCity(nameOfCities);
+            List<Hotel> hotels = hotelService.getAllHotels();
             for (Hotel hotel : hotels) {
                 String url = hotel.getMainImage();
                 if (url == null)
