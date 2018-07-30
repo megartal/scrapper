@@ -59,7 +59,6 @@ public class ImageDownloader implements Scrapper {
                 } catch (Exception e) {
                     e.printStackTrace();
                     continue;
-
                 }
             }
         }
