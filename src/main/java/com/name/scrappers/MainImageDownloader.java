@@ -46,15 +46,15 @@ public class MainImageDownloader implements Scrapper {
                 if (url == null)
                     continue;
                 try {
-                    url = url.replace("https://images.jabama.com/", "mainImage-");
-                    url = url + ".jpg";
-                    if (Files.isReadable(Paths.get(filPath + url))) {
+                    String src = url.replace("https://images.jabama.com/", "mainImage-");
+                    src = src + ".jpg";
+                    if (Files.isReadable(Paths.get(filPath + src))) {
                         log.info(url + "already there");
                         continue;
                     } else {
                         InputStream in = ApacheHttpClient.getImageWithoutSSLCertificate(url);
-                        Files.copy(in, Paths.get(filPath + url));
-                        log.info(url);
+                        Files.copy(in, Paths.get(filPath + src));
+                        log.info(src);
                     }
                     Thread.sleep(1000);
                 } catch (Exception e) {
