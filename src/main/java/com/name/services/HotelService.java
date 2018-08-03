@@ -37,4 +37,8 @@ public class HotelService {
     public List<Hotel> getAllHotelsOfCity(List<String> cities) {
         return hotelRepository.findAllByCities(cities);
     }
+
+    public Hotel getHotelByName(String id) {
+        return hotelRepository.findById(id).get();
+    }
 }

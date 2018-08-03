@@ -37,10 +37,19 @@ public class Crawler {
 
     public void crawl(OTA ota) {
         List<Hotel> hotels = hotelService.getAllHotels();
+//        Hotel hotelByName = hotelService.getHotelByName("b93fea95-a148-4637-babc-c3d107ffe83f");
+//        ArrayList<Hotel> hotels = new ArrayList<>();
+//        hotels.add(hotelByName);
         for (Hotel hotel : hotels) {
             log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
+                if (otaScrapInfo.getHotelName().equals("nist"))
+                    continue;
+                if (hotel.getImages().isEmpty())
+                    continue;
+                if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty())
+                    continue;
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity());
                 processData(roomsData, ota, hotel, otaScrapInfo);
                 Thread.sleep(100000);
