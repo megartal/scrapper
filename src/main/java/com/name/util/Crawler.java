@@ -52,7 +52,7 @@ public class Crawler {
                     continue;
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity());
                 processData(roomsData, ota, hotel, otaScrapInfo);
-                Thread.sleep(100000);
+                Thread.sleep(150000);
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
                 continue;
