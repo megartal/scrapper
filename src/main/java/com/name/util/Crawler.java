@@ -55,6 +55,10 @@ public class Crawler {
                 Thread.sleep(150000);
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
+                try {
+                    Thread.sleep(100000);
+                } catch (InterruptedException e1) {
+                }
                 continue;
             }
         }
