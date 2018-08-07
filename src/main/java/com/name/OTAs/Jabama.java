@@ -42,6 +42,11 @@ public class Jabama extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
+        try {
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         List<Room> rooms = new ArrayList<>();
         Date dt = new Date();
         Calendar c = Calendar.getInstance();
