@@ -41,21 +41,28 @@ public class Crawler {
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
         for (Hotel hotel : hotels) {
-            log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
-                if (otaScrapInfo.getHotelName().equals("nist"))
+                if (otaScrapInfo.getHotelName().equals("nist")) {
+                    log.info(ota.getName() + ": crawling " + hotel.getName() + " nist.");
                     continue;
-                if (hotel.getImages().isEmpty())
+                }
+                if (hotel.getImages().isEmpty()) {
+                    log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     continue;
-                if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty())
+                }
+                if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty()) {
+                    log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     continue;
+                }
+                log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity());
                 processData(roomsData, ota, hotel, otaScrapInfo);
+                Thread.sleep(100000);
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
                 try {
-                    Thread.sleep(60000);
+                    Thread.sleep(100000);
                 } catch (InterruptedException e1) {
                 }
                 continue;

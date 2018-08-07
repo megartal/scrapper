@@ -44,11 +44,6 @@ public class Eghamat24 extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
-        try {
-            Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         List<Room> rooms = new ArrayList<>();
         try {
             String html1 = ApacheHttpClient.getHtml(createURL(scrapInfo.getHotelName()));

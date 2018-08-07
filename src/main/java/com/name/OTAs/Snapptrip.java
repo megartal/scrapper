@@ -51,11 +51,6 @@ public class Snapptrip extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
-        try {
-            Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         List<Room> rooms = new ArrayList<>();
         Elements roomElements = getRoomElements(getHtmlDocument(createURL(scrapInfo.getHotelName(), city)), getRoomDiv());
         Map<String, Integer> roomTypes = getRoomTypes(scrapInfo.getRoomTypes());
