@@ -25,10 +25,23 @@ public class ProxyService {
 
 
     public List<Proxy> getHttpsProxies() {
-        return proxyRepository.findByProtocol("https");
+        return proxyRepository.findByProtocolAndStatus("https", true);
     }
 
     public List<Proxy> getHttpProxies() {
         return proxyRepository.findByProtocol("http");
+    }
+
+    public void update(Proxy proxy) {
+        proxy.setStatus(false);
+        proxyRepository.save(proxy);
+    }
+
+    public void deleteAll() {
+        proxyRepository.deleteAll();
+    }
+
+    public void saveAll(List<Proxy> proxies) {
+        proxyRepository.saveAll(proxies);
     }
 }

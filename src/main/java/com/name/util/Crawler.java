@@ -12,6 +12,10 @@ import com.name.services.RateService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,46 +41,56 @@ public class Crawler {
     }
 
     public void crawl(OTA ota) {
-        List<Hotel> hotels = hotelService.getAllHotels();
+//        List<Hotel> hotels = hotelService.getAllHotels();
+        List<Hotel> hotels = hotelService.getObsoleteHotel();
 //        Hotel hotelByName = hotelService.getHotelByName("b93fea95-a148-4637-babc-c3d107ffe83f");
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
         List<Proxy> proxies = proxyService.getHttpsProxies();
+        if (proxies.size() < 10)
+            updateProxies();
+
         log.info("num of proxies: " + proxies.size());
 //        List<Proxy> proxies = proxyService.getHttpProxies();
         int count = 0;
         for (Hotel hotel : hotels) {
             Proxy proxy = proxies.get(count);
             count++;
-            if (count > 50)
+            if (count > (proxies.size() - 10))
                 count = 0;
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
                 if (otaScrapInfo.getHotelName().equals("nist")) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " nist.");
+                    hotelService.update(hotel);
                     continue;
                 }
                 if (hotel.getImages().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
+                    hotelService.update(hotel);
                     continue;
                 }
                 if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
+                    hotelService.update(hotel);
                     continue;
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity(), proxy);
                 processData(roomsData, ota, hotel, otaScrapInfo);
+                hotelService.update(hotel);
                 Random r = new Random();
-                int Low = 70000;
-                int High = 100000;
+                int Low = 90000;
+                int High = 110000;
                 int rand = r.nextInt(High - Low) + Low;
                 Thread.sleep(rand);
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
+                proxyService.update(proxy);
                 try {
-                    Thread.sleep(100000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e1) {
+                    e1.printStackTrace();
                 }
                 continue;
             }
@@ -123,5 +137,32 @@ public class Crawler {
             rate = new Rate(new Date(), otaName, hotelName, room, true);
         }
         rateService.add(rate);
+    }
+
+    public void updateProxies() {
+        List<Proxy> proxies = new ArrayList<>();
+        String html = ApacheHttpClient.getHtml("https://free-proxy-list.net/", null);
+        Document doc = Jsoup.parse(html);
+        Elements tr = doc.getElementsByTag("tr");
+        for (Element element : tr) {
+            try {
+                Proxy proxy = new Proxy();
+                if (element.getElementsByTag("td").size() == 0)
+                    continue;
+                proxy.setIp(element.getElementsByTag("td").get(0).text());
+                proxy.setPort(element.getElementsByTag("td").get(1).text());
+                if (element.getElementsByTag("td").get(6).text().equals("yes")) {
+                    proxy.setProtocol("https");
+                } else {
+                    proxy.setProtocol("http");
+                }
+                proxy.setStatus(true);
+                proxies.add(proxy);
+            } catch (Exception e) {
+                continue;
+            }
+        }
+        proxyService.deleteAll();
+        proxyService.saveAll(proxies);
     }
 }

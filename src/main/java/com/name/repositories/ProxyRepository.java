@@ -11,4 +11,6 @@ import java.util.List;
  */
 public interface ProxyRepository extends MongoRepository<Proxy, String> {
     List<Proxy> findByProtocol(String https);
+
+    List<Proxy> findByProtocolAndStatus(String https, boolean status);
 }

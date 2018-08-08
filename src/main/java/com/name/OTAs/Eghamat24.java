@@ -95,7 +95,7 @@ public class Eghamat24 extends BaseOTA {
                 }
                 Room room = new Room(roomName, roomType, prices);
                 rooms.add(room);
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             }
             return rooms;
         } catch (Exception e) {

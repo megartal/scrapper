@@ -4,6 +4,7 @@ import com.name.documents.Hotel;
 import com.name.repositories.hotel.HotelRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,5 +41,15 @@ public class HotelService {
 
     public Hotel getHotelByName(String id) {
         return hotelRepository.findById(id).get();
+    }
+
+    public List<Hotel> getObsoleteHotel() {
+        return hotelRepository.findLastUpdated(10);
+    }
+
+
+    public void update(Hotel hotel) {
+        hotel.setCrawlDate(new Date());
+        hotelRepository.save(hotel);
     }
 }
