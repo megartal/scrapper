@@ -37,7 +37,7 @@ public class JabamaHotelInfoScrapperMain implements Scrapper {
     }
 
     private void extractInfo(Hotel hotel, String url) throws Exception {
-        String html = ApacheHttpClient.getHtml(url);
+        String html = ApacheHttpClient.getHtml(url, null);
         Document doc = Jsoup.parse(html);
         String data = doc.select(xpath).get(0).data();
         String[] splitJson = data.split(",");

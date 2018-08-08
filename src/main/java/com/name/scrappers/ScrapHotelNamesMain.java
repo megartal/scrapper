@@ -66,7 +66,7 @@ public class ScrapHotelNamesMain implements Scrapper {
             }
             int pageNum = 1;
             while (true) {
-                String result = ApacheHttpClient.getHtml(createURL(city, String.valueOf(pageNum)));
+                String result = ApacheHttpClient.getHtml(createURL(city, String.valueOf(pageNum)), null);
                 Document doc = Jsoup.parse(result);
                 if (doc.select(String.format(getSelector(), 1)) == null || doc.select(String.format(getSelector(), 1)).html().isEmpty()) {
                     break;

@@ -3,6 +3,7 @@ package com.name.util;
 import com.google.common.collect.Sets;
 import com.name.OTAs.OTA;
 import com.name.documents.Hotel;
+import com.name.documents.Proxy;
 import com.name.documents.Rate;
 import com.name.models.*;
 import com.name.services.HotelService;
@@ -40,7 +41,12 @@ public class Crawler {
 //        Hotel hotelByName = hotelService.getHotelByName("b93fea95-a148-4637-babc-c3d107ffe83f");
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
+        int count = 0;
         for (Hotel hotel : hotels) {
+            Proxy proxy = null;
+            count++;
+            if (count > 98)
+                count = 0;
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
                 if (otaScrapInfo.getHotelName().equals("nist")) {
@@ -56,7 +62,7 @@ public class Crawler {
                     continue;
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
-                List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity());
+                List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity(), proxy);
                 processData(roomsData, ota, hotel, otaScrapInfo);
                 Thread.sleep(100000);
             } catch (Exception e) {

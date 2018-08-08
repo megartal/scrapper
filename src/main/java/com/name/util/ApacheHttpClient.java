@@ -1,10 +1,14 @@
 package com.name.util;
 
+import com.name.documents.Proxy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -22,7 +26,28 @@ import java.security.cert.X509Certificate;
  */
 @Slf4j
 public class ApacheHttpClient {
-    public static String getHtml(String url) {
+    public static String getHtmlUsingProxy(String url, Proxy proxy) {
+        HttpHost prxy = new HttpHost(proxy.getIp(), Integer.parseInt(proxy.getPort()), proxy.getProtocol());
+        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(prxy);
+        CloseableHttpClient httpclient = HttpClients.custom()
+                .setRoutePlanner(routePlanner)
+                .build();
+        HttpGet httpGet = new HttpGet(url);
+        try {
+            return IOUtils.toString(httpclient.execute(httpGet).getEntity().getContent(), "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static String getHtml(String url, Proxy proxy) {
         CloseableHttpClient httpClientBuilder = HttpClientBuilder.create().build();
         HttpGet httpGet = new HttpGet(url);
         try {
@@ -120,6 +145,7 @@ public class ApacheHttpClient {
         }
         return null;
     }
+
     private static class DefaultTrustManager implements X509TrustManager {
 
         @Override

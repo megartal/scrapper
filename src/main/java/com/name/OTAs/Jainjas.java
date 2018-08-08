@@ -1,5 +1,6 @@
 package com.name.OTAs;
 
+import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
@@ -39,7 +40,7 @@ public class Jainjas extends BaseOTA {
     }
 
     @Override
-    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
+    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) {
         try {
             String html1 = ApacheHttpClient.getHtmlWithoutSSLCertificate(createURL(scrapInfo.getHotelName()));
             Document doc1 = Jsoup.parse(html1);

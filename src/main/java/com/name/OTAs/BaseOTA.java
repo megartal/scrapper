@@ -1,5 +1,6 @@
 package com.name.OTAs;
 
+import com.name.documents.Proxy;
 import com.name.models.Room;
 import com.name.models.RoomType;
 import com.name.models.ScrapInfo;
@@ -29,10 +30,10 @@ public abstract class BaseOTA implements OTA {
     private String name;
     private String urlToCrawl;
 
-    public abstract List<Room> getRoomsData(ScrapInfo scrapInfo, String city);
+    public abstract List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies);
 
-    protected Document getHtmlDocument(String url) {
-        String html = ApacheHttpClient.getHtml(url);
+    protected Document getHtmlDocument(String url, Proxy proxy) {
+        String html = ApacheHttpClient.getHtmlUsingProxy(url, proxy);
         return Jsoup.parse(html);
     }
 

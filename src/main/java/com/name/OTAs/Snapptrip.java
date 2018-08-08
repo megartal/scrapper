@@ -1,5 +1,6 @@
 package com.name.OTAs;
 
+import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
@@ -50,15 +51,15 @@ public class Snapptrip extends BaseOTA {
     }
 
     @Override
-    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
+    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) {
         List<Room> rooms = new ArrayList<>();
-        Elements roomElements = getRoomElements(getHtmlDocument(createURL(scrapInfo.getHotelName(), city)), getRoomDiv());
+        Elements roomElements = getRoomElements(getHtmlDocument(createURL(scrapInfo.getHotelName(), city), proxy), getRoomDiv());
         Map<String, Integer> roomTypes = getRoomTypes(scrapInfo.getRoomTypes());
         for (Element roomElement : roomElements) {
             Room room = new Room();
             String roomID = roomElement.attr("id").replace("room_", "");
             int roomType = Integer.parseInt(roomElement.getElementsByClass("bed").text().replace("نفر", "").trim());
-            String html = ApacheHttpClient.getHtml(String.format(getWebservice(), roomID));
+            String html = ApacheHttpClient.getHtmlUsingProxy(String.format(getWebservice(), roomID), proxy);
             JSONObject jsonObject = (JSONObject) new JSONObject(html).get("data");
             JSONArray prices = jsonObject.optJSONArray("room_availablity");
             Set<Price> priceList = new HashSet<>();

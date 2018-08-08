@@ -1,5 +1,6 @@
 package com.name.OTAs;
 
+import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
@@ -41,7 +42,7 @@ public class Jabama extends BaseOTA {
     }
 
     @Override
-    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city) {
+    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) {
         List<Room> rooms = new ArrayList<>();
         Date dt = new Date();
         Calendar c = Calendar.getInstance();
@@ -52,7 +53,7 @@ public class Jabama extends BaseOTA {
         Map<String, Integer> roomTypes = null;
         if (scrapInfo.getRoomTypes() != null && !scrapInfo.getRoomTypes().isEmpty())
             roomTypes = getRoomTypes(scrapInfo.getRoomTypes());
-        Document htmlDocument = getHtmlDocument(createURL(scrapInfo.getHotelName(), startDate, endDate));
+        Document htmlDocument = getHtmlDocument(createURL(scrapInfo.getHotelName(), startDate, endDate), proxy);
         Elements scripts = htmlDocument.getElementsByTag("script");
         for (Element script : scripts) {
             if (script.data().contains("hotelDetailResult")) {
