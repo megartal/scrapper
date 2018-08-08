@@ -34,23 +34,25 @@ public class ProxyList implements Scrapper {
         String html = ApacheHttpClient.getHtml("https://free-proxy-list.net/", null);
         Document doc = Jsoup.parse(html);
         Elements tr = doc.getElementsByTag("tr");
-        int count = 0;
         for (Element element : tr) {
-            count++;
-            if (count > 100)
-                break;
-            Proxy proxy = new Proxy();
-            if (element.getElementsByTag("td").size() == 0)
+            try {
+                Proxy proxy = new Proxy();
+                if (element.getElementsByTag("td").size() == 0)
+                    continue;
+                proxy.setIp(element.getElementsByTag("td").get(0).text());
+                proxy.setPort(element.getElementsByTag("td").get(1).text());
+                if (element.getElementsByTag("td").get(6).text().equals("yes")) {
+                    proxy.setProtocol("https");
+                } else {
+                    proxy.setProtocol("http");
+                }
+                proxy.setStatus(true);
+                proxies.add(proxy);
+            } catch (Exception e) {
                 continue;
-            proxy.setIp(element.getElementsByTag("td").get(0).text());
-            proxy.setPort(element.getElementsByTag("td").get(1).text());
-            if (element.getElementsByTag("td").get(6).text().equals("yes")) {
-                proxy.setProtocol("https");
-            } else {
-                proxy.setProtocol("http");
             }
-            proxies.add(proxy);
         }
+        proxyRepository.deleteAll();
         proxyRepository.saveAll(proxies);
     }
 }

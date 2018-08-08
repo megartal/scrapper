@@ -22,4 +22,5 @@ public class Proxy {
     private String ip;
     private String port;
     private String protocol;
+    private boolean status;
 }

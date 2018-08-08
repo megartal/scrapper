@@ -42,6 +42,7 @@ public class Crawler {
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
         List<Proxy> proxies = proxyService.getHttpsProxies();
+        log.info("num of proxies: " + proxies.size());
 //        List<Proxy> proxies = proxyService.getHttpProxies();
         int count = 0;
         for (Hotel hotel : hotels) {
