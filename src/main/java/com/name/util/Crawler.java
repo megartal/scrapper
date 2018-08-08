@@ -7,16 +7,14 @@ import com.name.documents.Proxy;
 import com.name.documents.Rate;
 import com.name.models.*;
 import com.name.services.HotelService;
+import com.name.services.ProxyService;
 import com.name.services.RateService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -30,10 +28,12 @@ import java.util.Set;
 public class Crawler {
     private final HotelService hotelService;
     private final RateService rateService;
+    private final ProxyService proxyService;
 
-    public Crawler(HotelService hotelService, RateService rateService) {
+    public Crawler(HotelService hotelService, RateService rateService, ProxyService proxyService) {
         this.hotelService = hotelService;
         this.rateService = rateService;
+        this.proxyService = proxyService;
     }
 
     public void crawl(OTA ota) {
@@ -41,11 +41,13 @@ public class Crawler {
 //        Hotel hotelByName = hotelService.getHotelByName("b93fea95-a148-4637-babc-c3d107ffe83f");
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
+        List<Proxy> proxies = proxyService.getHttpsProxies();
+//        List<Proxy> proxies = proxyService.getHttpProxies();
         int count = 0;
         for (Hotel hotel : hotels) {
-            Proxy proxy = null;
+            Proxy proxy = proxies.get(count);
             count++;
-            if (count > 98)
+            if (count > 50)
                 count = 0;
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
@@ -64,7 +66,11 @@ public class Crawler {
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity(), proxy);
                 processData(roomsData, ota, hotel, otaScrapInfo);
-                Thread.sleep(100000);
+                Random r = new Random();
+                int Low = 70000;
+                int High = 100000;
+                int rand = r.nextInt(High - Low) + Low;
+                Thread.sleep(rand);
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
                 try {

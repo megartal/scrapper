@@ -27,7 +27,7 @@ import java.security.cert.X509Certificate;
 @Slf4j
 public class ApacheHttpClient {
     public static String getHtmlUsingProxy(String url, Proxy proxy) {
-        HttpHost prxy = new HttpHost(proxy.getIp(), Integer.parseInt(proxy.getPort()), proxy.getProtocol());
+        HttpHost prxy = new HttpHost(proxy.getIp(), Integer.parseInt(proxy.getPort()), HttpHost.DEFAULT_SCHEME_NAME);
         DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(prxy);
         CloseableHttpClient httpclient = HttpClients.custom()
                 .setRoutePlanner(routePlanner)
