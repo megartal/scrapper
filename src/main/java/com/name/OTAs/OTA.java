@@ -11,7 +11,7 @@ import java.util.List;
  * @DATE 5/19/2018.
  */
 public interface OTA extends Runnable{
-    List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies);
+    List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies) throws Exception;
     String getName();
 
     String getUrlToCrawl();

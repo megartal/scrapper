@@ -30,7 +30,7 @@ public abstract class BaseOTA implements OTA {
     private String name;
     private String urlToCrawl;
 
-    public abstract List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies);
+    public abstract List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies) throws Exception;
 
     protected Document getHtmlDocument(String url, Proxy proxy) {
         String html = ApacheHttpClient.getHtmlUsingProxy(url, proxy);

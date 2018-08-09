@@ -1,11 +1,9 @@
 package com.name.OTAs;
 
-import com.name.documents.Hotel;
 import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
-import com.name.repositories.hotel.HotelRepository;
 import com.name.util.ApacheHttpClient;
 import com.name.util.Crawler;
 import com.name.util.DateConverter;
@@ -19,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -31,20 +30,18 @@ import java.util.*;
 @Slf4j
 public class Jainjas extends BaseOTA {
     private final Crawler crawler;
-    private final HotelRepository hotelRepository;
     @Value("${jainjas.urlPattern}")
     private String jainastUrlFormat;
     @Value("${jainjas.sleep}")
     private int sleep;
     private String name = "jainjas";
 
-    public Jainjas(Crawler crawler, HotelRepository hotelRepository) {
+    public Jainjas(Crawler crawler) {
         this.crawler = crawler;
-        this.hotelRepository = hotelRepository;
     }
 
     @Override
-    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) {
+    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws UnsupportedEncodingException, InterruptedException {
         try {
             Thread.sleep(5000);
             String html1 = ApacheHttpClient.getHtmlWithoutSSLCertificate(createURL(scrapInfo.getHotelName()));
@@ -84,9 +81,8 @@ public class Jainjas extends BaseOTA {
             }
             return resultRooms;
         } catch (Exception e) {
-            log.error(e.getMessage(), e.getCause());
+            throw e;
         }
-        return null;
     }
 
     private String createURL(String hotelName) {
@@ -96,14 +92,6 @@ public class Jainjas extends BaseOTA {
 
     @Override
     public void run() {
-        List<Hotel> all = hotelRepository.findAll();
-        for (Hotel hotel : all) {
-            for (ScrapInfo scrapInfo : hotel.getScrapInfo()) {
-                if (scrapInfo.getOTAName().equals(getName()))
-                    scrapInfo.setCrawlDate(new Date());
-            }
-            hotelRepository.save(hotel);
-        }
         while (true) {
             try {
                 crawler.crawl(this);

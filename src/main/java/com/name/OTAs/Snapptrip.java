@@ -1,11 +1,9 @@
 package com.name.OTAs;
 
-import com.name.documents.Hotel;
 import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
-import com.name.repositories.hotel.HotelRepository;
 import com.name.util.ApacheHttpClient;
 import com.name.util.Crawler;
 import lombok.Getter;
@@ -34,7 +32,6 @@ import java.util.*;
 @Slf4j
 public class Snapptrip extends BaseOTA {
     private final Crawler crawler;
-    private final HotelRepository hotelRepository;
     @Value("${snapptrip.webservice}")
     private String webservice;
     @Value("${snapptrip.urlPattern}")
@@ -49,43 +46,46 @@ public class Snapptrip extends BaseOTA {
     private int sleep;
     private String name = "snapptrip";
 
-    public Snapptrip(Crawler crawler, HotelRepository hotelRepository) {
+    public Snapptrip(Crawler crawler) {
         this.crawler = crawler;
-        this.hotelRepository = hotelRepository;
     }
 
     @Override
-    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) {
+    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
         List<Room> rooms = new ArrayList<>();
-        Elements roomElements = getRoomElements(getHtmlDocument(createURL(scrapInfo.getHotelName(), city), proxy), getRoomDiv());
-        Map<String, Integer> roomTypes = getRoomTypes(scrapInfo.getRoomTypes());
-        for (Element roomElement : roomElements) {
-            Room room = new Room();
-            String roomID = roomElement.attr("id").replace("room_", "");
-            int roomType = Integer.parseInt(roomElement.getElementsByClass("bed").text().replace("نفر", "").trim());
-            String html = ApacheHttpClient.getHtmlUsingProxy(String.format(getWebservice(), roomID), proxy);
-            JSONObject jsonObject = (JSONObject) new JSONObject(html).get("data");
-            JSONArray prices = jsonObject.optJSONArray("room_availablity");
-            Set<Price> priceList = new HashSet<>();
-            String roomName = jsonObject.getString("room_title");
-            for (int i = 0; i < prices.length(); i++) {
-                Price price = new Price();
-                JSONObject obj = prices.getJSONObject(i);
-                price.setDate(convertStringToDate((String) obj.get("date")));
-                price.setValue(Integer.parseInt(obj.get("price_off").toString()));
-                price.setAvailable((int) obj.get("available_quantity") > 0 ? true : false);
-                priceList.add(price);
+        try {
+            Elements roomElements = getRoomElements(getHtmlDocument(createURL(scrapInfo.getHotelName(), city), proxy), getRoomDiv());
+            Map<String, Integer> roomTypes = getRoomTypes(scrapInfo.getRoomTypes());
+            for (Element roomElement : roomElements) {
+                Room room = new Room();
+                String roomID = roomElement.attr("id").replace("room_", "");
+                int roomType = Integer.parseInt(roomElement.getElementsByClass("bed").text().replace("نفر", "").trim());
+                String html = ApacheHttpClient.getHtmlUsingProxy(String.format(getWebservice(), roomID), proxy);
+                JSONObject jsonObject = (JSONObject) new JSONObject(html).get("data");
+                JSONArray prices = jsonObject.optJSONArray("room_availablity");
+                Set<Price> priceList = new HashSet<>();
+                String roomName = jsonObject.getString("room_title");
+                for (int i = 0; i < prices.length(); i++) {
+                    Price price = new Price();
+                    JSONObject obj = prices.getJSONObject(i);
+                    price.setDate(convertStringToDate((String) obj.get("date")));
+                    price.setValue(Integer.parseInt(obj.get("price_off").toString()));
+                    price.setAvailable((int) obj.get("available_quantity") > 0 ? true : false);
+                    priceList.add(price);
+                }
+                room.setPrices(priceList);
+                room.setRoomName(roomName);
+                if (roomTypes.get(roomName) != null) {
+                    room.setRoomType(roomTypes.get(roomName));
+                } else {
+                    room.setRoomType(roomType);
+                }
+                rooms.add(room);
             }
-            room.setPrices(priceList);
-            room.setRoomName(roomName);
-            if (roomTypes.get(roomName) != null) {
-                room.setRoomType(roomTypes.get(roomName));
-            } else {
-                room.setRoomType(roomType);
-            }
-            rooms.add(room);
+            return rooms;
+        } catch (Exception e) {
+            throw e;
         }
-        return rooms;
     }
 
     private Date convertStringToDate(String dateString) {
@@ -116,14 +116,6 @@ public class Snapptrip extends BaseOTA {
 
     @Override
     public void run() {
-        List<Hotel> all = hotelRepository.findAll();
-        for (Hotel hotel : all) {
-            for (ScrapInfo scrapInfo : hotel.getScrapInfo()) {
-                if (scrapInfo.getOTAName().equals(getName()))
-                    scrapInfo.setCrawlDate(new Date());
-            }
-            hotelRepository.save(hotel);
-        }
         while (true) {
             try {
                 crawler.crawl(this);
