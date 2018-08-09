@@ -94,6 +94,7 @@ public class Crawler {
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
+
                 continue;
             }
         }
