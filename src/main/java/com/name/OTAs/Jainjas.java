@@ -1,9 +1,11 @@
 package com.name.OTAs;
 
+import com.name.documents.Hotel;
 import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
+import com.name.repositories.hotel.HotelRepository;
 import com.name.util.ApacheHttpClient;
 import com.name.util.Crawler;
 import com.name.util.DateConverter;
@@ -29,14 +31,16 @@ import java.util.*;
 @Slf4j
 public class Jainjas extends BaseOTA {
     private final Crawler crawler;
+    private final HotelRepository hotelRepository;
     @Value("${jainjas.urlPattern}")
     private String jainastUrlFormat;
     @Value("${jainjas.sleep}")
     private int sleep;
     private String name = "jainjas";
 
-    public Jainjas(Crawler crawler) {
+    public Jainjas(Crawler crawler, HotelRepository hotelRepository) {
         this.crawler = crawler;
+        this.hotelRepository = hotelRepository;
     }
 
     @Override
@@ -92,6 +96,14 @@ public class Jainjas extends BaseOTA {
 
     @Override
     public void run() {
+        List<Hotel> all = hotelRepository.findAll();
+        for (Hotel hotel : all) {
+            for (ScrapInfo scrapInfo : hotel.getScrapInfo()) {
+                if (scrapInfo.getOTAName().equals(getName()))
+                    scrapInfo.setCrawlDate(new Date());
+            }
+            hotelRepository.save(hotel);
+        }
         while (true) {
             try {
                 crawler.crawl(this);

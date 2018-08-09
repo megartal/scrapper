@@ -30,9 +30,10 @@ public class HotelRepositoryCustomImpl implements HotelRepositoryCustom {
     }
 
     @Override
-    public List<Hotel> findLastUpdated(int limit) {
+    public List<Hotel> findLastUpdated(int limit, String otaName) {
         Query query = new Query();
-        query.limit(10);
+        query.limit(limit);
+        query.addCriteria(Criteria.where("scrapInfo.$OTAName").is(otaName));
         query.with(new Sort(Sort.Direction.ASC, "crawlDate"));
         List<Hotel> hotels = template.find(query, Hotel.class);
         return hotels;

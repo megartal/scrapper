@@ -37,5 +37,4 @@ public class Hotel {
     private String cancelPolicy;
     private String accomType;
     private Set<OTAData> data = new HashSet<>();
-    private Date crawlDate;
 }

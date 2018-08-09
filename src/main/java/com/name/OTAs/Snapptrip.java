@@ -1,9 +1,11 @@
 package com.name.OTAs;
 
+import com.name.documents.Hotel;
 import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
+import com.name.repositories.hotel.HotelRepository;
 import com.name.util.ApacheHttpClient;
 import com.name.util.Crawler;
 import lombok.Getter;
@@ -32,6 +34,7 @@ import java.util.*;
 @Slf4j
 public class Snapptrip extends BaseOTA {
     private final Crawler crawler;
+    private final HotelRepository hotelRepository;
     @Value("${snapptrip.webservice}")
     private String webservice;
     @Value("${snapptrip.urlPattern}")
@@ -46,8 +49,9 @@ public class Snapptrip extends BaseOTA {
     private int sleep;
     private String name = "snapptrip";
 
-    public Snapptrip(Crawler crawler) {
+    public Snapptrip(Crawler crawler, HotelRepository hotelRepository) {
         this.crawler = crawler;
+        this.hotelRepository = hotelRepository;
     }
 
     @Override
@@ -112,6 +116,14 @@ public class Snapptrip extends BaseOTA {
 
     @Override
     public void run() {
+        List<Hotel> all = hotelRepository.findAll();
+        for (Hotel hotel : all) {
+            for (ScrapInfo scrapInfo : hotel.getScrapInfo()) {
+                if (scrapInfo.getOTAName().equals(getName()))
+                    scrapInfo.setCrawlDate(new Date());
+            }
+            hotelRepository.save(hotel);
+        }
         while (true) {
             try {
                 crawler.crawl(this);

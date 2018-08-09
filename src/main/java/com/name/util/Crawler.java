@@ -42,7 +42,8 @@ public class Crawler {
 
     public void crawl(OTA ota) {
 //        List<Hotel> hotels = hotelService.getAllHotels();
-        List<Hotel> hotels = hotelService.getObsoleteHotel();
+        List<Hotel> hotels = hotelService.getObsoleteHotel(50, ota.getName());
+        log.info(ota.getName() + ": pick 50 hotel to crawl.");
 //        Hotel hotelByName = hotelService.getHotelByName("b93fea95-a148-4637-babc-c3d107ffe83f");
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
@@ -56,29 +57,30 @@ public class Crawler {
         for (Hotel hotel : hotels) {
             Proxy proxy = proxies.get(count);
             count++;
-            if (count > (proxies.size() - 10))
+            if (count > (proxies.size() - 2))
                 count = 0;
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
                 if (otaScrapInfo.getHotelName().equals("nist")) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " nist.");
-                    hotelService.update(hotel);
+                    hotelService.update(hotel, ota.getName());
                     continue;
                 }
                 if (hotel.getImages().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
-                    hotelService.update(hotel);
+                    hotelService.update(hotel, ota.getName());
                     continue;
                 }
                 if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
-                    hotelService.update(hotel);
+                    hotelService.update(hotel, ota.getName());
                     continue;
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity(), proxy);
                 processData(roomsData, ota, hotel, otaScrapInfo);
-                hotelService.update(hotel);
+                hotelService.update(hotel, ota.getName());
+                log.info(ota.getName() + ": success");
                 Random r = new Random();
                 int Low = 90000;
                 int High = 110000;

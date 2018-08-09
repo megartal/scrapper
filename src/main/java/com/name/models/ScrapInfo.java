@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class ScrapInfo {
     private String OTAName;
+    private Date crawlDate;
     private String hotelName;
     private boolean isReady;
     private Set<RoomType> roomTypes = new HashSet<>();

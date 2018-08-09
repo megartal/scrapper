@@ -11,5 +11,5 @@ import java.util.List;
 public interface HotelRepositoryCustom {
     List<Hotel> findAllByCities(List<String> cities);
 
-    List<Hotel> findLastUpdated(int limit);
+    List<Hotel> findLastUpdated(int limit, String otaName);
 }

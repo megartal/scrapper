@@ -1,9 +1,11 @@
 package com.name.OTAs;
 
+import com.name.documents.Hotel;
 import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
+import com.name.repositories.hotel.HotelRepository;
 import com.name.util.Crawler;
 import com.name.util.DateConverter;
 import lombok.Getter;
@@ -29,6 +31,7 @@ import java.util.*;
 @Slf4j
 public class Jabama extends BaseOTA {
     private final Crawler crawler;
+    private final HotelRepository hotelRepository;
     @Value("${jabama.urlPattern}")
     private String urlPattern;
     @Value("${jabama.userRedirect}")
@@ -37,8 +40,9 @@ public class Jabama extends BaseOTA {
     private int sleep;
     private String name = "jabama";
 
-    public Jabama(Crawler crawler) {
+    public Jabama(Crawler crawler, HotelRepository hotelRepository) {
         this.crawler = crawler;
+        this.hotelRepository = hotelRepository;
     }
 
     @Override
@@ -96,6 +100,14 @@ public class Jabama extends BaseOTA {
 
     @Override
     public void run() {
+        List<Hotel> all = hotelRepository.findAll();
+        for (Hotel hotel : all) {
+            for (ScrapInfo scrapInfo : hotel.getScrapInfo()) {
+                if (scrapInfo.getOTAName().equals(getName()))
+                    scrapInfo.setCrawlDate(new Date());
+            }
+            hotelRepository.save(hotel);
+        }
         while (true) {
             try {
                 crawler.crawl(this);

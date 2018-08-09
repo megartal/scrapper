@@ -1,9 +1,11 @@
 package com.name.OTAs;
 
+import com.name.documents.Hotel;
 import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
+import com.name.repositories.hotel.HotelRepository;
 import com.name.util.ApacheHttpClient;
 import com.name.util.Crawler;
 import com.name.util.DateConverter;
@@ -31,6 +33,7 @@ import java.util.*;
 public class Eghamat24 extends BaseOTA {
 
     private final Crawler crawler;
+    private final HotelRepository hotelRepository;
     @Value("${eghamat24.urlPattern}")
     private String urlPattern;
     @Value("${eghamat24.sleep}")
@@ -39,8 +42,9 @@ public class Eghamat24 extends BaseOTA {
     private String webservice;
     private String name = "eghamat24";
 
-    public Eghamat24(Crawler crawler) {
+    public Eghamat24(Crawler crawler, HotelRepository hotelRepository) {
         this.crawler = crawler;
+        this.hotelRepository = hotelRepository;
     }
 
     @Override
@@ -111,6 +115,15 @@ public class Eghamat24 extends BaseOTA {
 
     @Override
     public void run() {
+        List<Hotel> all = hotelRepository.findAll();
+        for (Hotel hotel : all) {
+            for (ScrapInfo scrapInfo : hotel.getScrapInfo()) {
+                if (scrapInfo.getOTAName().equals(getName()))
+                    scrapInfo.setCrawlDate(new Date());
+            }
+            hotelRepository.save(hotel);
+        }
+
         while (true) {
             try {
                 crawler.crawl(this);
