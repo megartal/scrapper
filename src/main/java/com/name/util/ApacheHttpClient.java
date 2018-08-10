@@ -124,6 +124,23 @@ public class ApacheHttpClient {
         return null;
     }
 
+    public static InputStream getSnapptripImage(String s) {
+        CloseableHttpClient httpClientBuilder = HttpClientBuilder.create().build();
+        HttpGet httpGet = new HttpGet(s);
+        try {
+            return httpClientBuilder.execute(httpGet).getEntity().getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                httpClientBuilder.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     public static InputStream getImageWithoutSSLCertificate(String s) {
         // configure the SSLContext with a TrustManager
         try {
