@@ -43,5 +43,6 @@ public class RoomPriceScrapper implements Scrapper {
         for (OTA ota : OTAs) {
             executor.execute(ota);
         }
+
     }
 }
