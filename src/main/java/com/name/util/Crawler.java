@@ -78,7 +78,9 @@ public class Crawler {
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity(), proxy);
+                log.info(ota.getName() + ": crawling " + hotel.getName() + "wait to process.");
                 processData(roomsData, ota, hotel, otaScrapInfo);
+                log.info(ota.getName() + ": crawling " + hotel.getName() + "wait to processed.");
                 hotelService.update(hotel, ota.getName());
                 log.info(ota.getName() + ": success");
                 Random r = new Random();
