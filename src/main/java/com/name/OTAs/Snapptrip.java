@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
@@ -112,6 +114,11 @@ public class Snapptrip extends BaseOTA {
         String modified = str.replace("hotelName", calledName);
         setUrlToCrawl(modified);
         return getUrlToCrawl();
+    }
+
+    protected Document getHtmlDocument(String url, Proxy proxy) {
+        String html = ApacheHttpClient.getHtml(url, proxy);
+        return Jsoup.parse(html);
     }
 
     @Override

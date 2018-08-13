@@ -4,11 +4,9 @@ import com.name.documents.Proxy;
 import com.name.models.Room;
 import com.name.models.RoomType;
 import com.name.models.ScrapInfo;
-import com.name.util.ApacheHttpClient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
@@ -32,10 +30,10 @@ public abstract class BaseOTA implements OTA {
 
     public abstract List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies) throws Exception;
 
-    protected Document getHtmlDocument(String url, Proxy proxy) {
-        String html = ApacheHttpClient.getHtmlUsingProxy(url, proxy);
-        return Jsoup.parse(html);
-    }
+//    protected Document getHtmlDocument(String url, Proxy proxy) {
+//        String html = ApacheHttpClient.getHtml(url, proxy);
+//        return Jsoup.parse(html);
+//    }
 
     protected Map<String, Integer> getRoomTypes(Set<RoomType> roomType) {
         Map<String, Integer> map = new HashMap<>();

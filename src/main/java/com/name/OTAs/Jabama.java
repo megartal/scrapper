@@ -4,12 +4,14 @@ import com.name.documents.Proxy;
 import com.name.models.Price;
 import com.name.models.Room;
 import com.name.models.ScrapInfo;
+import com.name.util.ApacheHttpClient;
 import com.name.util.Crawler;
 import com.name.util.DateConverter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -95,6 +97,11 @@ public class Jabama extends BaseOTA {
     private String createURL(String calledName, String startDate, String endDate) {
         setUrlToCrawl(String.format(getUrlUsreRedirect(), calledName));
         return String.format(getUrlPattern(), calledName, startDate, endDate);
+    }
+
+    protected Document getHtmlDocument(String url, Proxy proxy) {
+        String html = ApacheHttpClient.getHtml(url, proxy);
+        return Jsoup.parse(html);
     }
 
     @Override
