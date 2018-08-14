@@ -69,7 +69,7 @@ public class Eghamat24 extends BaseOTA {
                 String currentShamsidate = DateConverter.getCurrentShamsidate();
                 String date = currentShamsidate.substring(2).replace("/", "-");
                 Set<Price> prices = new HashSet<>();
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 5; i++) {
                     String html = ApacheHttpClient.getHtmlUsingProxy(String.format(webservice, roomId, hotelId, date), proxy);
                     Document data = Jsoup.parse(html);
                     Elements elements = data.getElementsByClass("hotel_calender_item");
@@ -89,7 +89,7 @@ public class Eghamat24 extends BaseOTA {
                     }
                     Calendar c = Calendar.getInstance();
                     c.setTime(new Date());
-                    c.add(Calendar.DATE, (i + 1) * 10);
+                    c.add(Calendar.DATE, (i + 1) * 6);
                     currentShamsidate = DateConverter.getShamsidate(c.getTime());
                     date = currentShamsidate.substring(2).replace("/", "-");
                 }
