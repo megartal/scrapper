@@ -44,7 +44,7 @@ public class Crawler {
 //        List<Hotel> hotels = hotelService.getAllHotels();
         List<Hotel> hotels = hotelService.getObsoleteHotel(50, ota.getName());
         log.info(ota.getName() + ": pick " + hotels.size() + " hotel to crawl.");
-//        Hotel hotelByName = hotelService.getHotelByName("b93fea95-a148-4637-babc-c3d107ffe83f");
+//        Hotel hotelByName = hotelService.getHotelByName("7de8420b-9ddf-4850-bbaa-9b6a2250e101");
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
         List<Proxy> proxies = proxyService.getHttpsProxies();
@@ -78,16 +78,10 @@ public class Crawler {
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity(), proxy);
-                log.info(ota.getName() + ": crawling " + hotel.getName() + "wait to process.");
                 processData(roomsData, ota, hotel, otaScrapInfo);
-                log.info(ota.getName() + ": crawling " + hotel.getName() + "wait to processed.");
+                log.info(ota.getName() + ": crawling " + hotel.getName() + " finished.");
                 hotelService.update(hotel, ota.getName());
                 log.info(ota.getName() + ": success");
-                Random r = new Random();
-                int Low = 90000;
-                int High = 110000;
-                int rand = r.nextInt(High - Low) + Low;
-                Thread.sleep(rand);
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
                 proxyService.update(proxy);

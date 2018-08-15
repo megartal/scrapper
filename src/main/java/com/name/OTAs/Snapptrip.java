@@ -54,6 +54,11 @@ public class Snapptrip extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
+        Random r = new Random();
+        int Low = sleep;
+        int High = sleep + 20000;
+        int rand = r.nextInt(High - Low) + Low;
+        Thread.sleep(rand);
         List<Room> rooms = new ArrayList<>();
         try {
             Elements roomElements = getRoomElements(getHtmlDocument(createURL(scrapInfo.getHotelName(), city), proxy), getRoomDiv());

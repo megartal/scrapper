@@ -45,6 +45,11 @@ public class Eghamat24 extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
+        Random r = new Random();
+        int Low = sleep;
+        int High = sleep + 20000;
+        int rand = r.nextInt(High - Low) + Low;
+        Thread.sleep(rand);
         List<Room> rooms = new ArrayList<>();
         try {
             String html1 = ApacheHttpClient.getHtmlUsingProxy(createURL(scrapInfo.getHotelName()), proxy);
@@ -70,7 +75,7 @@ public class Eghamat24 extends BaseOTA {
                 String date = currentShamsidate.substring(2).replace("/", "-");
                 Set<Price> prices = new HashSet<>();
                 for (int i = 0; i < 5; i++) {
-                    String html = ApacheHttpClient.getHtmlUsingProxy(String.format(webservice, roomId, hotelId, date), proxy);
+                    String html = ApacheHttpClient.getHtml(String.format(webservice, roomId, hotelId, date), proxy);
                     Document data = Jsoup.parse(html);
                     Elements elements = data.getElementsByClass("hotel_calender_item");
                     for (Element element : elements) {
@@ -95,7 +100,7 @@ public class Eghamat24 extends BaseOTA {
                 }
                 Room room = new Room(roomName, roomType, prices);
                 rooms.add(room);
-                Thread.sleep(2000);
+                Thread.sleep(5000);
             }
             return rooms;
         } catch (Exception e) {

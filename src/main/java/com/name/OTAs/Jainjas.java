@@ -42,6 +42,11 @@ public class Jainjas extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws UnsupportedEncodingException, InterruptedException {
+        Random r = new Random();
+        int Low = sleep;
+        int High = sleep + 20000;
+        int rand = r.nextInt(High - Low) + Low;
+        Thread.sleep(rand);
         try {
             Thread.sleep(5000);
             String html1 = ApacheHttpClient.getHtmlWithoutSSLCertificate(createURL(scrapInfo.getHotelName()));

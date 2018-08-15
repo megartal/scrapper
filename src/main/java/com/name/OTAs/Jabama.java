@@ -45,6 +45,11 @@ public class Jabama extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
+        Random r = new Random();
+        int Low = sleep;
+        int High = sleep + 20000;
+        int rand = r.nextInt(High - Low) + Low;
+        Thread.sleep(rand);
         List<Room> rooms = new ArrayList<>();
         try {
             Date dt = new Date();
