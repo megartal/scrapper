@@ -44,7 +44,7 @@ public class Crawler {
 //        List<Hotel> hotels = hotelService.getAllHotels();
         List<Hotel> hotels = hotelService.getObsoleteHotel(50, ota.getName());
         log.info(ota.getName() + ": pick " + hotels.size() + " hotel to crawl.");
-//        Hotel hotelByName = hotelService.getHotelByName("7de8420b-9ddf-4850-bbaa-9b6a2250e101");
+//        Hotel hotelByName = hotelService.getHotelByName("7da3a06b-ac86-4b95-9667-5f8943fcfd00");
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
         List<Proxy> proxies = proxyService.getHttpsProxies();

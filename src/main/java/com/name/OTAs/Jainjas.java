@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -74,8 +75,13 @@ public class Jainjas extends BaseOTA {
                 JSONArray roomPrices = (JSONArray) ((JSONObject) room).get("RoomPrices");
                 Set<Price> prices = new HashSet<>();
                 for (Object roomPrice : roomPrices) {
+                    Integer price;
                     String date = (String) (((JSONObject) roomPrice).get("Date"));
-                    Integer price = (Integer) (((JSONObject) roomPrice).get("PassengerPrice"));
+                    if ((((JSONObject) roomPrice).get("PassengerPrice")) instanceof Double) {
+                        price = new BigDecimal((((JSONObject) roomPrice).get("PassengerPrice")).toString()).intValue();
+                    } else {
+                        price = (Integer) (((JSONObject) roomPrice).get("PassengerPrice"));
+                    }
                     Integer availableNumber = (Integer) (((JSONObject) roomPrice).get("AvailableNumber"));
                     boolean available = false;
                     if (availableNumber > 0)
