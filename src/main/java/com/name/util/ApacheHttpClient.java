@@ -28,8 +28,8 @@ import java.security.cert.X509Certificate;
 @Slf4j
 public class ApacheHttpClient {
     public static String getHtmlUsingProxy(String url, Proxy proxy) {
-        int timeout = 20000;
-        int managerTimeout = 20000;
+        int timeout = 100000;
+        int managerTimeout = 100000;
         RequestConfig defaultRequestConfig = RequestConfig.custom()
                 .setConnectTimeout(timeout)
                 .setSocketTimeout(timeout)
