@@ -81,7 +81,10 @@ public class Eghamat24 extends BaseOTA {
                     for (Element element : elements) {
                         Price price = new Price();
                         String day = element.getElementsByClass("hotel_calender_item_header").get(0).getElementsByTag("p").text();
-                        price.setDate(DateConverter.JalaliToGregorian("13" + DigitConverter.convertToEnglishDigits(day.substring(day.length() - 8, day.length()))));
+                        Calendar c = Calendar.getInstance();
+                        c.setTime(DateConverter.JalaliToGregorian("13" + DigitConverter.convertToEnglishDigits(day.substring(day.length() - 8, day.length()))));
+                        c.add(Calendar.DATE, -1);
+                        price.setDate(c.getTime());
                         Elements roomPrice = element.getElementsByClass("hotel_calender_item_main").get(0).getElementsByClass("new_price");
                         if (roomPrice.size() == 0) {
                             price.setAvailable(false);
