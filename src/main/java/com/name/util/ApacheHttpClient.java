@@ -4,6 +4,7 @@ import com.name.documents.Proxy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -27,12 +28,26 @@ import java.security.cert.X509Certificate;
 @Slf4j
 public class ApacheHttpClient {
     public static String getHtmlUsingProxy(String url, Proxy proxy) {
+        int timeout = 20000;
+        int managerTimeout = 20000;
+        RequestConfig defaultRequestConfig = RequestConfig.custom()
+                .setConnectTimeout(timeout)
+                .setSocketTimeout(timeout)
+                .setConnectionRequestTimeout(managerTimeout)
+                .build();
         HttpHost prxy = new HttpHost(proxy.getIp(), Integer.parseInt(proxy.getPort()), HttpHost.DEFAULT_SCHEME_NAME);
         DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(prxy);
         CloseableHttpClient httpclient = HttpClients.custom()
                 .setRoutePlanner(routePlanner)
+                .setDefaultRequestConfig(defaultRequestConfig)
+                .build();
+        RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
+                .setConnectTimeout(timeout * 2)
+                .setSocketTimeout(timeout * 2)
+                .setConnectionRequestTimeout(managerTimeout * 2)
                 .build();
         HttpGet httpGet = new HttpGet(url);
+        httpGet.setConfig(requestConfig);
         try {
             return IOUtils.toString(httpclient.execute(httpGet).getEntity().getContent(), "UTF-8");
         } catch (IOException e) {
