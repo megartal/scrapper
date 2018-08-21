@@ -45,14 +45,18 @@ public class Eghamat24 extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
+        log.info("before sleep");
         Random r = new Random();
         int Low = sleep;
         int High = sleep + 20000;
         int rand = r.nextInt(High - Low) + Low;
         Thread.sleep(rand);
+        log.info("after sleep");
         List<Room> rooms = new ArrayList<>();
         try {
+            log.info("before http get main page");
             String html1 = ApacheHttpClient.getHtmlUsingProxy(createURL(scrapInfo.getHotelName()), proxy);
+            log.info("after http get main page");
 //            String html1 = ApacheHttpClient.getHtml("https://www.eghamat24.com/TehranHotels/ParsianEsteghlalHotel.html");
             Document htmlDocument = Jsoup.parse(html1);
             int hotelId = Integer.parseInt(htmlDocument.getElementById("hid").attr("value"));
@@ -75,7 +79,9 @@ public class Eghamat24 extends BaseOTA {
                 String date = currentShamsidate.substring(2).replace("/", "-");
                 Set<Price> prices = new HashSet<>();
                 for (int i = 0; i < 5; i++) {
+                    log.info("before http get price page");
                     String html = ApacheHttpClient.getHtmlUsingProxy(String.format(webservice, roomId, hotelId, date), proxy);
+                    log.info("after http get price page");
                     Document data = Jsoup.parse(html);
                     Elements elements = data.getElementsByClass("hotel_calender_item");
                     for (Element element : elements) {
@@ -103,10 +109,13 @@ public class Eghamat24 extends BaseOTA {
                 }
                 Room room = new Room(roomName, roomType, prices);
                 rooms.add(room);
+                log.info("prices get successfully");
                 Thread.sleep(5000);
             }
             return rooms;
         } catch (Exception e) {
+            log.info("exception in eghmat class");
+            log.error(e.getMessage());
             throw e;
         }
     }
@@ -121,8 +130,9 @@ public class Eghamat24 extends BaseOTA {
         while (true) {
             try {
                 crawler.crawl(this);
-                Thread.sleep(sleep);
+                Thread.sleep(5000);
             } catch (Exception e) {
+                log.info("exception in run method");
                 log.error("error in eghamat24: " + e.getMessage());
             }
         }
