@@ -20,6 +20,7 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.*;
 
 /**
  * @Author Akbar
@@ -27,6 +28,15 @@ import java.security.cert.X509Certificate;
  */
 @Slf4j
 public class ApacheHttpClient {
+    private static final ExecutorService THREADPOOL
+            = Executors.newCachedThreadPool();
+
+    private static <T> T call(Callable<T> c, long timeout, TimeUnit timeUnit) throws Exception {
+        FutureTask<T> t = new FutureTask<T>(c);
+        THREADPOOL.execute(t);
+        return t.get(timeout, timeUnit);
+    }
+
     public static String getHtmlUsingProxy(String url, Proxy proxy) {
         int timeout = 100000;
         int managerTimeout = 100000;
@@ -49,9 +59,14 @@ public class ApacheHttpClient {
         HttpGet httpGet = new HttpGet(url);
         httpGet.setConfig(requestConfig);
         try {
-            return IOUtils.toString(httpclient.execute(httpGet).getEntity().getContent(), "UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
+            return call(new Callable<String>() {
+                public String call() throws Exception {
+                    return IOUtils.toString(httpclient.execute(httpGet).getEntity().getContent(), "UTF-8");
+                }
+            }, 5, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            System.err.println("https get timeout exception.");
+            return null;
         } finally {
             try {
                 httpclient.close();
@@ -59,7 +74,6 @@ public class ApacheHttpClient {
                 e.printStackTrace();
             }
         }
-        return null;
     }
 
     public static String getHtml(String url, Proxy proxy) {

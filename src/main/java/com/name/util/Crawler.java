@@ -78,7 +78,7 @@ public class Crawler {
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity(), proxy);
-                log.info(ota.getName() + ": crawling " + hotel.getName() + "  processing.");
+//                log.info(ota.getName() + ": crawling " + hotel.getName() + "  processing.");
                 processData(roomsData, ota, hotel, otaScrapInfo);
                 log.info(ota.getName() + ": crawling " + hotel.getName() + " finished.");
                 hotelService.update(hotel, ota.getName());
