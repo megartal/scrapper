@@ -37,7 +37,7 @@ public class ApacheHttpClient {
         return t.get(timeout, timeUnit);
     }
 
-    public static String getHtmlUsingProxy(String url, Proxy proxy) {
+    public static String getHtmlUsingProxy(String url, Proxy proxy) throws Exception {
         int timeout = 100000;
         int managerTimeout = 100000;
         RequestConfig defaultRequestConfig = RequestConfig.custom()
@@ -63,37 +63,36 @@ public class ApacheHttpClient {
                 public String call() throws Exception {
                     return IOUtils.toString(httpclient.execute(httpGet).getEntity().getContent(), "UTF-8");
                 }
-            }, 5, TimeUnit.MINUTES);
+            }, 1, TimeUnit.MINUTES);
         } catch (Exception e) {
-            System.err.println("https get timeout exception.");
-            return null;
+            log.info("https get timeout exception.");
+            throw e;
         } finally {
             try {
                 httpclient.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw e;
             }
         }
     }
 
-    public static String getHtml(String url, Proxy proxy) {
+    public static String getHtml(String url, Proxy proxy) throws Exception {
         CloseableHttpClient httpClientBuilder = HttpClientBuilder.create().build();
         HttpGet httpGet = new HttpGet(url);
         try {
             return IOUtils.toString(httpClientBuilder.execute(httpGet).getEntity().getContent(), "UTF-8");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw e;
         } finally {
             try {
                 httpClientBuilder.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw e;
             }
         }
-        return null;
     }
 
-    public static String postRequest(String url, String params) throws UnsupportedEncodingException {
+    public static String postRequest(String url, String params) throws Exception {
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -124,12 +123,11 @@ public class ApacheHttpClient {
 
             return response.toString();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw e;
         }
-        return null;
     }
 
-    public static String getHtmlWithoutSSLCertificate(String s) {
+    public static String getHtmlWithoutSSLCertificate(String s) throws Exception {
         // configure the SSLContext with a TrustManager
         try {
             SSLContext ctx = SSLContext.getInstance("TLS");
@@ -148,9 +146,8 @@ public class ApacheHttpClient {
             conn.disconnect();
             return html;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
-        return null;
     }
 
     public static InputStream getSnapptripImage(String s) {
@@ -170,7 +167,7 @@ public class ApacheHttpClient {
         return null;
     }
 
-    public static InputStream getImageWithoutSSLCertificate(String s) {
+    public static InputStream getImageWithoutSSLCertificate(String s) throws Exception {
         // configure the SSLContext with a TrustManager
         try {
             SSLContext ctx = SSLContext.getInstance("TLS");
@@ -187,9 +184,8 @@ public class ApacheHttpClient {
             });
             return conn.getInputStream();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
-        return null;
     }
 
     private static class DefaultTrustManager implements X509TrustManager {

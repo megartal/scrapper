@@ -6,6 +6,7 @@ import com.name.documents.Hotel;
 import com.name.documents.Proxy;
 import com.name.documents.Rate;
 import com.name.models.*;
+import com.name.services.CrawlerStatusService;
 import com.name.services.HotelService;
 import com.name.services.ProxyService;
 import com.name.services.RateService;
@@ -33,11 +34,13 @@ public class Crawler {
     private final HotelService hotelService;
     private final RateService rateService;
     private final ProxyService proxyService;
+    private final CrawlerStatusService crawlerStatusService;
 
-    public Crawler(HotelService hotelService, RateService rateService, ProxyService proxyService) {
+    public Crawler(HotelService hotelService, RateService rateService, ProxyService proxyService, CrawlerStatusService crawlerStatus) {
         this.hotelService = hotelService;
         this.rateService = rateService;
         this.proxyService = proxyService;
+        this.crawlerStatusService = crawlerStatus;
     }
 
     public void crawl(OTA ota) {
@@ -64,16 +67,19 @@ public class Crawler {
                 if (otaScrapInfo.getHotelName().equals("nist")) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " nist.");
                     hotelService.update(hotel, ota.getName());
+                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "nist", null);
                     continue;
                 }
                 if (hotel.getImages().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     hotelService.update(hotel, ota.getName());
+                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "no images", null);
                     continue;
                 }
                 if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     hotelService.update(hotel, ota.getName());
+                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "no main image", null);
                     continue;
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
@@ -82,16 +88,24 @@ public class Crawler {
                 processData(roomsData, ota, hotel, otaScrapInfo);
                 log.info(ota.getName() + ": crawling " + hotel.getName() + " finished.");
                 hotelService.update(hotel, ota.getName());
+                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "fail", null);
                 log.info(ota.getName() + ": success");
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
+                String error;
+                if (e.getMessage() != null) {
+                    error = e.getMessage();
+                } else {
+                    error = e.getCause().toString();
+                }
+                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "fail", error);
+                hotelService.update(hotel, ota.getName());
                 proxyService.update(proxy);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
-
                 continue;
             }
         }
@@ -141,7 +155,12 @@ public class Crawler {
 
     public void updateProxies() {
         List<Proxy> proxies = new ArrayList<>();
-        String html = ApacheHttpClient.getHtml("https://free-proxy-list.net/", null);
+        String html = null;
+        try {
+            html = ApacheHttpClient.getHtml("https://free-proxy-list.net/", null);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
         Document doc = Jsoup.parse(html);
         Elements tr = doc.getElementsByTag("tr");
         for (Element element : tr) {

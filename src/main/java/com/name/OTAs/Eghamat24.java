@@ -45,13 +45,13 @@ public class Eghamat24 extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
-        log.info("before sleep");
+//        log.info("before sleep");
         Random r = new Random();
         int Low = sleep;
         int High = sleep + 20000;
         int rand = r.nextInt(High - Low) + Low;
         Thread.sleep(rand);
-        log.info("after sleep");
+//        log.info("after sleep");
         List<Room> rooms = new ArrayList<>();
         try {
 //            log.info("before http get main page");
@@ -114,8 +114,6 @@ public class Eghamat24 extends BaseOTA {
             }
             return rooms;
         } catch (Exception e) {
-            log.info("exception in eghmat class");
-            log.error(e.getMessage());
             throw e;
         }
     }
@@ -132,8 +130,7 @@ public class Eghamat24 extends BaseOTA {
                 crawler.crawl(this);
                 Thread.sleep(5000);
             } catch (Exception e) {
-                log.info("exception in run method");
-                log.error("error in eghamat24: " + e.getMessage());
+                log.error("exception in run method eghamat24: " + e.getMessage());
             }
         }
     }

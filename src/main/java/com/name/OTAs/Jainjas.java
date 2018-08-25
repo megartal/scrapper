@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -42,7 +41,7 @@ public class Jainjas extends BaseOTA {
     }
 
     @Override
-    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws UnsupportedEncodingException, InterruptedException {
+    public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
         Random r = new Random();
         int Low = sleep;
         int High = sleep + 20000;

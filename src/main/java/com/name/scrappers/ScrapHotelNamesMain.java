@@ -53,10 +53,14 @@ public class ScrapHotelNamesMain implements Scrapper {
     @Override
     public void start() {
         List<City> cities = cityService.getAllCities();
-        getHotelNames(cities);
+        try {
+            getHotelNames(cities);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void getHotelNames(List<City> cities) {
+    public void getHotelNames(List<City> cities) throws Exception {
         for (City rawCity : cities) {
             String city = null;
             try {

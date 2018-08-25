@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -95,18 +96,19 @@ public class Snapptrip extends BaseOTA {
         }
     }
 
-    private Date convertStringToDate(String dateString) {
+    private Date convertStringToDate(String dateString) throws ParseException {
         Date date = null;
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         try {
             date = df.parse(dateString);
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex.getCause());
+            throw ex;
         }
         return date;
     }
 
-    protected String createURL(String calledName, String city) {
+    protected String createURL(String calledName, String city) throws UnsupportedEncodingException {
         calledName = calledName.replace(city, "").trim();
         calledName = calledName.replace(" ", "-").trim();
         try {
@@ -114,6 +116,7 @@ public class Snapptrip extends BaseOTA {
             city = URLEncoder.encode(city, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error(e.getMessage(), e.getCause());
+            throw e;
         }
         String str = getUrlPattern().replace("city", city);
         String modified = str.replace("hotelName", calledName);
@@ -121,7 +124,7 @@ public class Snapptrip extends BaseOTA {
         return getUrlToCrawl();
     }
 
-    protected Document getHtmlDocument(String url, Proxy proxy) {
+    protected Document getHtmlDocument(String url, Proxy proxy) throws Exception {
         String html = ApacheHttpClient.getHtml(url, proxy);
         return Jsoup.parse(html);
     }
@@ -133,8 +136,7 @@ public class Snapptrip extends BaseOTA {
                 crawler.crawl(this);
                 Thread.sleep(sleep);
             } catch (Exception e) {
-                log.error("error in snapptrip: " + e.getMessage());
-
+                log.error("error in snapptrip run method: " + e.getMessage());
             }
         }
     }

@@ -104,7 +104,7 @@ public class Jabama extends BaseOTA {
         return String.format(getUrlPattern(), calledName, startDate, endDate);
     }
 
-    protected Document getHtmlDocument(String url, Proxy proxy) {
+    protected Document getHtmlDocument(String url, Proxy proxy) throws Exception {
         String html = ApacheHttpClient.getHtml(url, proxy);
         return Jsoup.parse(html);
     }
@@ -116,7 +116,7 @@ public class Jabama extends BaseOTA {
                 crawler.crawl(this);
                 Thread.sleep(sleep);
             } catch (Exception e) {
-                log.error("error in jabama: " + e.getMessage());
+                log.error("error in run method jabama: " + e.getMessage());
             }
         }
     }

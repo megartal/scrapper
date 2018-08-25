@@ -31,7 +31,12 @@ public class ProxyList implements Scrapper {
     @Override
     public void start() {
         List<Proxy> proxies = new ArrayList<>();
-        String html = ApacheHttpClient.getHtml("https://free-proxy-list.net/", null);
+        String html = null;
+        try {
+            html = ApacheHttpClient.getHtml("https://free-proxy-list.net/", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Document doc = Jsoup.parse(html);
         Elements tr = doc.getElementsByTag("tr");
         for (Element element : tr) {
