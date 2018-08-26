@@ -11,7 +11,7 @@ import java.util.UUID;
  * @Author Akbar
  * @DATE 8/23/2018.
  */
-@Document
+@Document(collection = "crawler")
 @Getter
 @Setter
 public class CrawlerStatus {

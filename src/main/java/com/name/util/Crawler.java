@@ -73,13 +73,13 @@ public class Crawler {
                 if (hotel.getImages().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     hotelService.update(hotel, ota.getName());
-                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "no images", null);
+                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "NoData", null);
                     continue;
                 }
                 if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     hotelService.update(hotel, ota.getName());
-                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "no main image", null);
+                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "NoData", null);
                     continue;
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
@@ -88,7 +88,7 @@ public class Crawler {
                 processData(roomsData, ota, hotel, otaScrapInfo);
                 log.info(ota.getName() + ": crawling " + hotel.getName() + " finished.");
                 hotelService.update(hotel, ota.getName());
-                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "fail", null);
+                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "success", null);
                 log.info(ota.getName() + ": success");
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
