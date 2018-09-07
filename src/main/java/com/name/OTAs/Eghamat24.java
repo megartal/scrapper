@@ -78,7 +78,7 @@ public class Eghamat24 extends BaseOTA {
                 String currentShamsidate = DateConverter.getCurrentShamsidate();
                 String date = currentShamsidate.substring(2).replace("/", "-");
                 Set<Price> prices = new HashSet<>();
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 6; i++) {
 //                    log.info("before http get price page");
                     String html = ApacheHttpClient.getHtmlUsingProxy(String.format(webservice, roomId, hotelId, date), proxy);
 //                    log.info("after http get price page");
@@ -103,14 +103,14 @@ public class Eghamat24 extends BaseOTA {
                     }
                     Calendar c = Calendar.getInstance();
                     c.setTime(new Date());
-                    c.add(Calendar.DATE, (i + 1) * 6);
+                    c.add(Calendar.DATE, (i + 1) * 5);
                     currentShamsidate = DateConverter.getShamsidate(c.getTime());
                     date = currentShamsidate.substring(2).replace("/", "-");
                 }
                 Room room = new Room(roomName, roomType, prices);
                 rooms.add(room);
 //                log.info("prices get successfully");
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             }
             return rooms;
         } catch (Exception e) {
