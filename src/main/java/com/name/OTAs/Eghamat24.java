@@ -80,6 +80,7 @@ public class Eghamat24 extends BaseOTA {
                 Set<Price> prices = new HashSet<>();
                 for (int i = 0; i < 6; i++) {
 //                    log.info("before http get price page");
+
                     String html = ApacheHttpClient.getHtmlUsingProxy(String.format(webservice, roomId, hotelId, date), proxy);
 //                    log.info("after http get price page");
                     Document data = Jsoup.parse(html);
