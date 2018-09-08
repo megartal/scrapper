@@ -48,7 +48,7 @@ public class Eghamat24 extends BaseOTA {
 //        log.info("before sleep");
         Random r = new Random();
         int Low = sleep;
-        int High = sleep + 20000;
+        int High = sleep + 10000;
         int rand = r.nextInt(High - Low) + Low;
         Thread.sleep(rand);
 //        log.info("after sleep");
