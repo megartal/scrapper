@@ -42,6 +42,5 @@ public class RemoveOTAData implements Scrapper {
             }
         }
         hotelRepository.saveAll(all);
-        System.exit(0);
     }
 }
