@@ -122,9 +122,9 @@ public class Crawler {
             }
         }
         log.info(hotel.getName() + " has no scrap info!");
-//        ScrapInfo scrapInfo = new ScrapInfo(otaName, "empty", false);
-//        hotel.getScrapInfo().add(scrapInfo);
-//        hotelService.saveHotel(hotel);
+        ScrapInfo scrapInfo = new ScrapInfo(otaName, "empty", false);
+        hotel.getScrapInfo().add(scrapInfo);
+        hotelService.saveHotel(hotel);
         throw new NullPointerException("there is no OTA info Scrapper.");
     }
 
@@ -137,7 +137,7 @@ public class Crawler {
             roomTypes.add(new RoomType(roomsDatum.getRoomName(), roomsDatum.getRoomType()));
         }
         ScrapInfo newInfo;
-        if (scrapInfo.getHotelId() == null || scrapInfo.getHotelId().isEmpty()) {
+        if (scrapInfo.getHotelId() == null) {
             newInfo = new ScrapInfo(ota.getName(), scrapInfo.getHotelName(), roomTypes, isReady);
         } else {
             newInfo = new ScrapInfo(ota.getName(), scrapInfo.getHotelName(), scrapInfo.getHotelId(), roomTypes, isReady);
