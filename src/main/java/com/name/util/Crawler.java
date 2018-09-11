@@ -119,6 +119,7 @@ public class Crawler {
                 return info;
             }
         }
+        log.info(hotel.getName() + " has no scrap info!");
         ScrapInfo scrapInfo = new ScrapInfo(otaName, "empty", false);
         hotel.getScrapInfo().add(scrapInfo);
         hotelService.saveHotel(hotel);
