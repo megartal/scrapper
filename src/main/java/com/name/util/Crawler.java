@@ -45,7 +45,7 @@ public class Crawler {
 
     public void crawl(OTA ota) {
 //        List<Hotel> hotels = hotelService.getAllHotels();
-        List<Hotel> hotels = hotelService.getObsoleteHotel(50, ota.getName());
+        List<Hotel> hotels = hotelService.getObsoleteHotel(30, ota.getName());
         log.info(ota.getName() + ": pick " + hotels.size() + " hotel to crawl.");
 //        Hotel hotelByName = hotelService.getHotelByName("7da3a06b-ac86-4b95-9667-5f8943fcfd00");
 //        ArrayList<Hotel> hotels = new ArrayList<>();

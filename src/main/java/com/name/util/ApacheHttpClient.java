@@ -4,8 +4,11 @@ import com.name.documents.Proxy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -124,6 +127,25 @@ public class ApacheHttpClient {
             return response.toString();
         } catch (Exception e) {
             throw e;
+        }
+    }
+
+    public static String httpsPostRequest(String url, String params) throws Exception {
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead
+
+        try {
+
+            HttpPost request = new HttpPost(url);
+            StringEntity entity = new StringEntity(params);
+            request.addHeader("content-type", "application/json");
+            request.setEntity(entity);
+            HttpResponse response = httpClient.execute(request);
+            return IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw ex;
+        } finally {
+            httpClient.close();
         }
     }
 

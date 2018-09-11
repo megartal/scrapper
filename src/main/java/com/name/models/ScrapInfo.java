@@ -21,6 +21,7 @@ public class ScrapInfo {
     private String OTAName;
     private Date crawlDate;
     private String hotelName;
+    private String hotelId;
     private boolean isReady;
     private Set<RoomType> roomTypes = new HashSet<>();
 

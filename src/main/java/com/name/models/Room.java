@@ -22,4 +22,9 @@ public class Room {
     //    private String roomId;
 //    private String meta;
     private Set<Price> prices = new HashSet<>();
+
+    public Room(String roomName, int roomType) {
+        this.roomName = roomName;
+        this.roomType = roomType;
+    }
 }
