@@ -30,6 +30,14 @@ public class ScrapInfo {
         this.hotelName = hotelName;
     }
 
+    public ScrapInfo(String OTAName, String hotelName, String hotelId, Set<RoomType> roomTypes, boolean isReady) {
+        this.OTAName = OTAName;
+        this.hotelName = hotelName;
+        this.hotelId = hotelId;
+        this.roomTypes = roomTypes;
+        this.isReady = isReady;
+    }
+
     public ScrapInfo(String OTAName, String hotelName, Set<RoomType> roomTypes, boolean isReady) {
         this.OTAName = OTAName;
         this.hotelName = hotelName;

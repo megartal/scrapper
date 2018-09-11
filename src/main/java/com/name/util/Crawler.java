@@ -100,7 +100,9 @@ public class Crawler {
                 }
                 crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "fail", error);
                 hotelService.update(hotel, ota.getName());
-                proxyService.update(proxy);
+                if (!e.getMessage().contains("safe proxy")) {
+                    proxyService.update(proxy);
+                }
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
@@ -134,7 +136,12 @@ public class Crawler {
                 isReady = false;
             roomTypes.add(new RoomType(roomsDatum.getRoomName(), roomsDatum.getRoomType()));
         }
-        ScrapInfo newInfo = new ScrapInfo(ota.getName(), scrapInfo.getHotelName(), roomTypes, isReady);
+        ScrapInfo newInfo;
+        if (scrapInfo.getHotelId() == null || scrapInfo.getHotelId().isEmpty()) {
+            newInfo = new ScrapInfo(ota.getName(), scrapInfo.getHotelName(), roomTypes, isReady);
+        } else {
+            newInfo = new ScrapInfo(ota.getName(), scrapInfo.getHotelName(), scrapInfo.getHotelId(), roomTypes, isReady);
+        }
         hotel.getScrapInfo().remove(newInfo);
         hotel.getScrapInfo().add(newInfo);
         OTAData otaData = new OTAData(ota.getName(), ota.getUrlToCrawl(), new HashSet<>(roomsData));

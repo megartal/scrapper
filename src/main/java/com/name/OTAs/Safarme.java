@@ -26,7 +26,7 @@ import java.util.*;
 @Slf4j
 public class Safarme extends BaseOTA {
     private final Crawler crawler;
-    @Value("${eghamat24.urlPattern}")
+    @Value("${safarme.urlPattern}")
     private String urlPattern;
     @Value("${safarme.sleep}")
     private int sleep;
@@ -40,6 +40,7 @@ public class Safarme extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies) throws Exception {
+        setUrlToCrawl(urlPattern + scrapInfo.getHotelName());
         List<Room> roomsResult = new ArrayList<>();
         String to;
         String from;
@@ -57,20 +58,20 @@ public class Safarme extends BaseOTA {
             c2.add(Calendar.DATE, (i + 1));
             from = getDateString(c1.getTime());
             to = getDateString(c2.getTime());
-            String.format(params, scrapInfo.getHotelId(), from, to);
+            params = String.format(params, scrapInfo.getHotelId(), from, to);
 //            params = String.format(params, "c206d4f9-8342-4213-b247-648a0d283137", from, to);
             String jsonResult;
             JSONObject jsonObject;
-            int count = 3;
+            int count = 1;
             try {
                 while (true) {
                     jsonResult = ApacheHttpClient.httpsPostRequest(webservice, params);
                     jsonObject = new JSONObject(jsonResult);
                     if ((boolean) jsonObject.get("IsSuccess") == false) {
-                        Thread.sleep(2000);
+                        Thread.sleep(8000);
                         count--;
                         if (count < 0) {
-                            throw new Exception("there is no response from safarme");
+                            throw new Exception("there is no response from safarme: safe proxy!");
                         }
                     } else {
                         break;
@@ -82,18 +83,17 @@ public class Safarme extends BaseOTA {
                     for (Object room : rooms) {
                         JSONObject roomData = (JSONObject) room;
                         roomMap.put((String) roomData.get("RoomID"), new Room((String) roomData.get("RoomTitle"), (Integer) roomData.get("BedCount")));
-                        priceListMap.put((String) roomData.get("RoomID"), new HashSet<>(Arrays.asList(new Price(c1.getTime(), (Integer) roomData.get("Price"), true))));
+                        priceListMap.put((String) roomData.get("RoomID"), new HashSet<>(Arrays.asList(new Price(c1.getTime(), ((Integer) roomData.get("Price")) / 10, true))));
                     }
                 } else {
                     for (Object room : rooms) {
                         JSONObject roomData = (JSONObject) room;
-                        priceListMap.get(roomData.get("RoomID")).add(new Price(c1.getTime(), (Integer) roomData.get("Price"), true));
+                        priceListMap.get(roomData.get("RoomID")).add(new Price(c1.getTime(), ((Integer) roomData.get("Price")) / 10, true));
                     }
                 }
                 Thread.sleep(sleep);
             } catch (Exception e) {
-                log.error("error in safarme" + e.getMessage());
-                throw e;
+                throw new Exception(e.getMessage() + " safe proxy");
             }
 
         }
