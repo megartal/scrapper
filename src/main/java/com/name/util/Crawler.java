@@ -125,6 +125,7 @@ public class Crawler {
 //        ScrapInfo scrapInfo = new ScrapInfo(otaName, "empty", false);
 //        hotel.getScrapInfo().add(scrapInfo);
 //        hotelService.saveHotel(hotel);
+
         throw new NullPointerException("there is no OTA info Scrapper.");
     }
 
