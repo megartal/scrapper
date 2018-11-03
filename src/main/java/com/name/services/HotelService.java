@@ -5,6 +5,8 @@ import com.name.models.ScrapInfo;
 import com.name.repositories.hotel.HotelRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -45,25 +47,25 @@ public class HotelService {
     }
 
     public List<Hotel> getObsoleteHotel(int num, String otaName) {
-        List<Hotel> all = hotelRepository.findLastUpdated(num, otaName);
-//        List<Hotel> all = hotelRepository.findAll();
-//        Collections.sort(all, new Comparator<Hotel>() {
-//            public int compare(Hotel o1, Hotel o2) {
-//                Date ob1 = null;
-//                Date ob2 = null;
-//                for (ScrapInfo scrapInfo : o1.getScrapInfo()) {
-//                    if (scrapInfo.getOTAName().equals(otaName))
-//                        ob1 = scrapInfo.getCrawlDate();
-//                }
-//                for (ScrapInfo scrapInfo : o2.getScrapInfo()) {
-//                    if (scrapInfo.getOTAName().equals(otaName))
-//                        ob2 = scrapInfo.getCrawlDate();
-//                }
-//
-//                return ob1.compareTo(ob2);
-//            }
-//        });
-//        all = all.subList(0, num);
+//        List<Hotel> all = hotelRepository.findLastUpdated(num, otaName);
+        List<Hotel> all = hotelRepository.findAll();
+        Collections.sort(all, new Comparator<Hotel>() {
+            public int compare(Hotel o1, Hotel o2) {
+                Date ob1 = null;
+                Date ob2 = null;
+                for (ScrapInfo scrapInfo : o1.getScrapInfo()) {
+                    if (scrapInfo.getOTAName().equals(otaName))
+                        ob1 = scrapInfo.getCrawlDate();
+                }
+                for (ScrapInfo scrapInfo : o2.getScrapInfo()) {
+                    if (scrapInfo.getOTAName().equals(otaName))
+                        ob2 = scrapInfo.getCrawlDate();
+                }
+
+                return ob1.compareTo(ob2);
+            }
+        });
+        all = all.subList(0, num);
         return all;
     }
 
