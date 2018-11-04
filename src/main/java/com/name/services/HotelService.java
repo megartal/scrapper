@@ -5,10 +5,7 @@ import com.name.models.ScrapInfo;
 import com.name.repositories.hotel.HotelRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author Akbar
@@ -46,9 +43,9 @@ public class HotelService {
         return hotelRepository.findById(id).get();
     }
 
-    public List<Hotel> getObsoleteHotel(int num, String otaName) {
+    public Iterable<Hotel> getObsoleteHotel(int num, String otaName) {
 //        List<Hotel> all = hotelRepository.findLastUpdated(num, otaName);
-        List<Hotel> all = hotelRepository.findAll();
+        List<Hotel> all = hotelRepository.findAllIncludeOnlyScrapInfo();
         Collections.sort(all, new Comparator<Hotel>() {
             public int compare(Hotel o1, Hotel o2) {
                 Date ob1 = null;
@@ -65,8 +62,10 @@ public class HotelService {
                 return ob1.compareTo(ob2);
             }
         });
-        all = all.subList(0, num);
-        return all;
+        ArrayList<String> IDs = new ArrayList<>();
+        all.stream().limit(num).forEach(x -> IDs.add(x.getId()));
+        Iterable<Hotel> hotels = hotelRepository.findAllById(IDs);
+        return hotels;
     }
 
     public void update(Hotel hotel, String otaName) {

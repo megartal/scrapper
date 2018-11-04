@@ -45,8 +45,8 @@ public class Crawler {
 
     public void crawl(OTA ota) {
 //        List<Hotel> hotels = hotelService.getAllHotels();
-        List<Hotel> hotels = hotelService.getObsoleteHotel(20, ota.getName());
-        log.info(ota.getName() + ": pick " + hotels.size() + " hotel to crawl.");
+        Iterable<Hotel> hotels = hotelService.getObsoleteHotel(30, ota.getName());
+//        log.info(ota.getName() + ": pick " + hotels + " hotel to crawl.");
 //        Hotel hotelByName = hotelService.getHotelByName("7da3a06b-ac86-4b95-9667-5f8943fcfd00");
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
@@ -67,19 +67,19 @@ public class Crawler {
                 if (otaScrapInfo.getHotelName().equals("nist")) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " nist.");
                     hotelService.update(hotel, ota.getName());
-                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "nist", null);
+//                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "nist", null);
                     continue;
                 }
                 if (hotel.getImages().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     hotelService.update(hotel, ota.getName());
-                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "NoData", null);
+//                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "NoData", null);
                     continue;
                 }
                 if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     hotelService.update(hotel, ota.getName());
-                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "NoData", null);
+//                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "NoData", null);
                     continue;
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
@@ -88,7 +88,7 @@ public class Crawler {
                 processData(roomsData, ota, hotel, otaScrapInfo);
                 log.info(ota.getName() + ": crawling " + hotel.getName() + " finished.");
                 hotelService.update(hotel, ota.getName());
-                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "success", null);
+//                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "success", null);
                 log.info(ota.getName() + ": success");
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
@@ -98,7 +98,7 @@ public class Crawler {
                 } else {
                     error = e.getCause().toString();
                 }
-                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "fail", error);
+//                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "fail", error);
                 hotelService.update(hotel, ota.getName());
                 if (!e.getMessage().contains("safe proxy")) {
                     proxyService.update(proxy);
