@@ -18,7 +18,6 @@ import java.util.List;
 @Service
 @Profile({"auto"})
 public class ProvideAutoCompleteData implements Scrapper {
-
     private final CityRepository cityRepository;
     private final HotelRepository hotelRepository;
     private final AutoCompleteRepository autoCompleteRepository;
