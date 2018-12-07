@@ -33,12 +33,21 @@ public class ProvideAutoCompleteData implements Scrapper {
         List<City> cities = cityRepository.findAll();
         List<Hotel> hotels = hotelRepository.findAll();
         for (City city : cities) {
-            AutoComplete autoComplete = new AutoComplete(city.getCity(), city.getCity(), city.getDistrict(), "شهر");
+            AutoComplete autoComplete = new AutoComplete(city.getCity(), city.getCity(), city.getDistrict(), "شهر", "");
             autoCompleteRepository.save(autoComplete);
         }
 
         for (Hotel hotel : hotels) {
-            AutoComplete autoComplete = new AutoComplete(hotel.getName(), hotel.getCity(), hotel.getDistrict(), "هتل");
+            AutoComplete autoComplete = null;
+            if (hotel.getName().contains("اقامتگاه سنتی")) {
+                autoComplete = new AutoComplete(hotel.getName(), hotel.getCity(), hotel.getDistrict(), "اقامتگاه سنتی", "sonati");
+            } else if (hotel.getName().contains("مهمانسرا")) {
+                autoComplete = new AutoComplete(hotel.getName(), hotel.getCity(), hotel.getDistrict(), "مهمانسرا", "sara");
+            } else if (hotel.getName().contains("آپارتمان")) {
+                autoComplete = new AutoComplete(hotel.getName(), hotel.getCity(), hotel.getDistrict(), " هتل آپارتمان", "aparteman");
+            } else {
+                autoComplete = new AutoComplete(hotel.getName(), hotel.getCity(), hotel.getDistrict(), "هتل", "hotel");
+            }
             autoCompleteRepository.save(autoComplete);
         }
     }

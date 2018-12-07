@@ -19,11 +19,13 @@ public class AutoComplete {
     private String city;
     private String province;
     private String type;
+    private String queryType;
 
-    public AutoComplete(String name, String city, String province, String type) {
+    public AutoComplete(String name, String city, String province, String type, String queryType) {
         this.name = name;
         this.city = city;
         this.province = province;
         this.type = type;
+        this.queryType = queryType;
     }
 }
