@@ -88,14 +88,16 @@ public class Crawler {
                 log.info(ota.getName() + ": success");
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
-                if (e.getMessage().contains("hotel name is empty"))
+                if (e.getMessage().contains("hotel name is empty")) {
+                    hotelService.update(hotel, ota.getName());
                     continue;
+                }
                 hotelService.update(hotel, ota.getName());
                 if (!e.getMessage().contains("safe proxy")) {
                     proxyService.update(proxy);
                 }
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }

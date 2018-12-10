@@ -28,10 +28,12 @@ import java.util.*;
 @Profile({"iranHotelOnline"})
 @Getter
 @Slf4j
-public class IranHotelOnline implements OTA {
+public class IranHotelOnline extends BaseOTA {
     private final Crawler crawler;
     @Value("${iranHotelOnline.urlPattern}")
     private String urlPattern;
+    @Value("${iranHotelOnline.userRedirect}")
+    private String userRedirect;
     @Value("${iranHotelOnline.sleep}")
     private int sleep;
     private String name = "iranHotelOnline";
@@ -58,10 +60,10 @@ public class IranHotelOnline implements OTA {
                     for (Element priceElement : elementsByRoomPrice) {
                         Date date = parseShamsiDate(priceElement.getElementsByClass("txt-value").get(0).text());
                         try {
-                            int price = Integer.parseInt(priceElement.getElementsByClass("n-price").get(0).text().replace(",", ""));
+                            int price = Integer.parseInt(priceElement.getElementsByClass("n-price").get(0).text().replace(",", "")) / 10;
                             prices.add(new Price(date, price, true));
                         } catch (Exception e) {
-                            prices.add(new Price(date, 0, false));
+                            prices.add(new Price(date, Integer.MAX_VALUE - 1, false));
                         }
                     }
                     room.getPrices().addAll(prices);
@@ -97,6 +99,7 @@ public class IranHotelOnline implements OTA {
     }
 
     private String createURL(String hotelName, String startDate, int span) {
+        setUrlToCrawl(String.format(userRedirect, hotelName));
         return String.format(getUrlPattern(), hotelName, startDate, span);
     }
 
@@ -122,16 +125,11 @@ public class IranHotelOnline implements OTA {
     }
 
     @Override
-    public String getUrlToCrawl() {
-        return null;
-    }
-
-    @Override
     public void run() {
         while (true) {
             try {
                 crawler.crawl(this);
-                Thread.sleep(sleep);
+                Thread.sleep(1);
             } catch (Exception e) {
                 log.error("error in run method iranHotelOnline: " + e.getMessage());
             }
