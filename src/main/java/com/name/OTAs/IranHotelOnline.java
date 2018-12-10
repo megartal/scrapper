@@ -110,8 +110,8 @@ public class IranHotelOnline implements OTA {
 
     private void randomWait() throws InterruptedException {
         Random r = new Random();
-        int Low = 5000;
-        int High = 10000;
+        int Low = 10000;
+        int High = 20000;
         int rand = r.nextInt(High - Low) + Low;
         Thread.sleep(rand);
     }
