@@ -97,7 +97,7 @@ public class Crawler {
                     proxyService.update(proxy);
                 }
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }

@@ -129,7 +129,7 @@ public class IranHotelOnline extends BaseOTA {
         while (true) {
             try {
                 crawler.crawl(this);
-                Thread.sleep(1);
+                Thread.sleep(sleep);
             } catch (Exception e) {
                 log.error("error in run method iranHotelOnline: " + e.getMessage());
             }
