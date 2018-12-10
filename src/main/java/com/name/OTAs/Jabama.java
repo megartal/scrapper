@@ -34,7 +34,7 @@ public class Jabama extends BaseOTA {
     @Value("${jabama.urlPattern}")
     private String urlPattern;
     @Value("${jabama.userRedirect}")
-    private String urlUsreRedirect;
+    private String urlUserRedirect;
     @Value("${jabama.sleep}")
     private int sleep;
     private String name = "jabama";
@@ -100,7 +100,7 @@ public class Jabama extends BaseOTA {
     }
 
     private String createURL(String calledName, String startDate, String endDate) {
-        setUrlToCrawl(String.format(getUrlUsreRedirect(), calledName));
+        setUrlToCrawl(String.format(getUrlUserRedirect(), calledName));
         return String.format(getUrlPattern(), calledName, startDate, endDate);
     }
 

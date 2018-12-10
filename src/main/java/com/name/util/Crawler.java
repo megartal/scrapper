@@ -67,13 +67,11 @@ public class Crawler {
                 if (otaScrapInfo.getHotelName().equals("nist")) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " nist.");
                     hotelService.update(hotel, ota.getName());
-//                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "nist", null);
                     continue;
                 }
                 if (hotel.getImages().isEmpty()) {
                     log.info(ota.getName() + ": crawling " + hotel.getName() + " no data.");
                     hotelService.update(hotel, ota.getName());
-//                    crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "NoData", null);
                     continue;
                 }
                 if (hotel.getMainImage() == null || hotel.getMainImage().isEmpty()) {
@@ -84,21 +82,14 @@ public class Crawler {
                 }
                 log.info(ota.getName() + ": crawling " + hotel.getName() + "started.");
                 List<Room> roomsData = ota.getRoomsData(otaScrapInfo, hotel.getCity(), proxy);
-//                log.info(ota.getName() + ": crawling " + hotel.getName() + "  processing.");
                 processData(roomsData, ota, hotel, otaScrapInfo);
                 log.info(ota.getName() + ": crawling " + hotel.getName() + " finished.");
                 hotelService.update(hotel, ota.getName());
-//                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "success", null);
                 log.info(ota.getName() + ": success");
             } catch (Exception e) {
                 log.error("OTA: " + ota.getName() + ", Hotel name: " + hotel.getName() + "\n" + e.getMessage());
-                String error;
-                if (e.getMessage() != null) {
-                    error = e.getMessage();
-                } else {
-                    error = e.getCause().toString();
-                }
-//                crawlerStatusService.updateFetchTime(hotel.getName(), ota.getName(), "fail", error);
+                if (e.getMessage().contains("hotel name is empty"))
+                    continue;
                 hotelService.update(hotel, ota.getName());
                 if (!e.getMessage().contains("safe proxy")) {
                     proxyService.update(proxy);

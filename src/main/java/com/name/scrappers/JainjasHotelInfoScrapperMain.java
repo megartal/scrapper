@@ -48,7 +48,7 @@ public class JainjasHotelInfoScrapperMain implements Scrapper {
             String[] values = doc1.getElementsByAttributeValue("type", "text/javascript").get(0).data().split(";");
             String value = values[3];
             String modelId = value.split("'")[1];
-            String currentShamsidate = DateConverter.getCurrentShamsidate();
+            String currentShamsidate = DateConverter.getCurrentShamsiDate();
             Date dt = new Date();
             Calendar c = Calendar.getInstance();
             c.setTime(dt);

@@ -3,7 +3,9 @@ package com.name.util;
 import ir.huri.jcal.JalaliCalendar;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @Author Akbar
@@ -11,7 +13,24 @@ import java.util.Locale;
  */
 public class DateConverter {
 
-    public static String getCurrentShamsidate() {
+    public static Map<String, Integer> farsiMonthStringToInt = new HashMap<>();
+
+    static {
+        farsiMonthStringToInt.put("فروردین", 1);
+        farsiMonthStringToInt.put("اردیبهشت", 2);
+        farsiMonthStringToInt.put("خرداد", 3);
+        farsiMonthStringToInt.put("تیر", 4);
+        farsiMonthStringToInt.put("مرداد", 5);
+        farsiMonthStringToInt.put("شهریور", 6);
+        farsiMonthStringToInt.put("مهر", 7);
+        farsiMonthStringToInt.put("آبان", 8);
+        farsiMonthStringToInt.put("آذر", 9);
+        farsiMonthStringToInt.put("دی", 10);
+        farsiMonthStringToInt.put("بهمن", 11);
+        farsiMonthStringToInt.put("اسفند", 12);
+    }
+
+    public static String getCurrentShamsiDate() {
         Locale loc = new Locale("en_US");
         DateConverter util = new DateConverter();
         SolarCalendar sc = util.new SolarCalendar();

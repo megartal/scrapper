@@ -75,7 +75,7 @@ public class Eghamat24 extends BaseOTA {
                         continue;
                     roomId = Integer.parseInt(room_action.get(0).getElementsByTag("a").attr("data-id"));
                 }
-                String currentShamsidate = DateConverter.getCurrentShamsidate();
+                String currentShamsidate = DateConverter.getCurrentShamsiDate();
                 String date = currentShamsidate.substring(2).replace("/", "-");
                 Set<Price> prices = new HashSet<>();
                 for (int i = 0; i < 6; i++) {

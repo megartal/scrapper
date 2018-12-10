@@ -51,6 +51,12 @@ public class ScrapInfo {
         this.isReady = isReady;
     }
 
+    public ScrapInfo(String OTAName, Date crawlDate, String hotelName) {
+        this.OTAName = OTAName;
+        this.crawlDate = crawlDate;
+        this.hotelName = hotelName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

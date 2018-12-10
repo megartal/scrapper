@@ -8,18 +8,21 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.URL;
+import java.net.*;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -208,6 +211,38 @@ public class ApacheHttpClient {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    public static String simpleConnection(String url) throws IOException {
+        StringBuilder source = new StringBuilder();
+        URL url1 = new URL(url);
+        HttpURLConnection c = (HttpURLConnection) url1.openConnection();
+        BufferedInputStream in = new BufferedInputStream(c.getInputStream());
+        Reader r = new InputStreamReader(in);
+
+        int i;
+        while ((i = r.read()) != -1) {
+            source.append((char) i);
+        }
+        return source.toString();
+    }
+
+    public static String selfSignedHttpClient(String url) {
+        try (CloseableHttpClient httpclient = createAcceptSelfSignedCertificateClient()) {
+            HttpGet httpget = new HttpGet(url);
+            return IOUtils.toString(httpclient.execute(httpget).getEntity().getContent(), "UTF-8");
+        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static CloseableHttpClient createAcceptSelfSignedCertificateClient() throws
+            KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+        SSLContextBuilder builder = new SSLContextBuilder();
+        builder.loadTrustMaterial(null, (chain, authType) -> true);
+        SSLConnectionSocketFactory sslsf = new
+                SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
+        return HttpClients.custom().setSSLSocketFactory(sslsf).build();
     }
 
     private static class DefaultTrustManager implements X509TrustManager {
