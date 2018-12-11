@@ -48,7 +48,7 @@ public class eghamat24v2 extends BaseOTA {
         List<Room> rooms = new ArrayList<>();
         try {
 //            String html1 = ApacheHttpClient.getHtmlUsingProxy(createURL(scrapInfo.getHotelName()), proxy);
-//            String html1 = ApacheHttpClient.getHtml("https://www.eghamat24.com/TehranHotels/ParsianEsteghlalHotel.html", proxies);
+//            String html1 = ApacheHttpClient.getHtml("https://www.eghamat24.com/YazdHotels/SonnatiRoyayehGhadimHotel.html", proxies);
             String html1 = ApacheHttpClient.getHtml(createURL(scrapInfo.getHotelName()), proxies);
             Document htmlDocument = Jsoup.parse(html1);
             Elements roomElements = htmlDocument.getElementsByClass("tr");
@@ -64,8 +64,9 @@ public class eghamat24v2 extends BaseOTA {
                     Elements priceElements = roomElement.getElementsByClass("item_active");
                     for (Element priceElement : priceElements) {
                         String farsiDate = priceElement.getElementsByClass("hotel_calender_item_header")
-                                .get(0).getElementsByTag("p").text().replace("شنبه", "").replace("یک", "").replace("دو", "").replace("سه", "")
-                                .replace("چهار", "").replace("پنجشنبه", "").replace("جمعه", "").trim();
+                                .get(0).getElementsByTag("p").text().replace("شنبه", "").replace("یکشنبه", "")
+                                .replace("یک", "").replace("دو", "").replace("سه", "")
+                                .replace("چهار", "").replace("پنج", "").replace("پنجشنبه", "").replace("جمعه", "").trim();
                         String farsiPrice = priceElement.getElementsByClass("new_price").text().replace("تومان", "").trim().replace(",", "");
                         Date date = getMiladiDate(farsiDate);
                         int value = Integer.parseInt(DigitConverter.convertToEnglishDigits(farsiPrice));

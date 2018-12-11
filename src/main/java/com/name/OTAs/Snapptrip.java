@@ -68,7 +68,7 @@ public class Snapptrip extends BaseOTA {
                 Room room = new Room();
                 String roomID = roomElement.attr("id").replace("room_", "");
                 int roomType = Integer.parseInt(roomElement.getElementsByClass("bed").text().replace("نفر", "").trim());
-                String html = ApacheHttpClient.getHtmlUsingProxy(String.format(getWebservice(), roomID), proxy);
+                String html = ApacheHttpClient.getHtml(String.format(getWebservice(), roomID), proxy);
                 JSONObject jsonObject = (JSONObject) new JSONObject(html).get("data");
                 JSONArray prices = jsonObject.optJSONArray("room_availablity");
                 Set<Price> priceList = new HashSet<>();
