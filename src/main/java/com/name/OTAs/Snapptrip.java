@@ -125,7 +125,7 @@ public class Snapptrip extends BaseOTA {
     }
 
     protected Document getHtmlDocument(String url, Proxy proxy) throws Exception {
-        String html = ApacheHttpClient.getHtml(url, proxy);
+        String html = ApacheHttpClient.getHtmlUsingProxy(url, proxy);
         return Jsoup.parse(html);
     }
 
