@@ -90,7 +90,7 @@ public class eghamat24v2 extends BaseOTA {
     private void randomWait() throws InterruptedException {
         Random r = new Random();
         int Low = sleep;
-        int High = sleep + 15000;
+        int High = sleep + 8000;
         int rand = r.nextInt(High - Low) + Low;
         Thread.sleep(rand);
     }

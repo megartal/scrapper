@@ -113,8 +113,8 @@ public class IranHotelOnline extends BaseOTA {
 
     private void randomWait() throws InterruptedException {
         Random r = new Random();
-        int Low = 10000;
-        int High = 20000;
+        int Low = sleep;
+        int High = sleep + 7000;
         int rand = r.nextInt(High - Low) + Low;
         Thread.sleep(rand);
     }
