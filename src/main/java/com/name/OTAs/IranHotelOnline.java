@@ -44,10 +44,11 @@ public class IranHotelOnline extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies) throws Exception {
+        randomWait(sleep, 20000);
         Map<String, Room> rooms = new HashMap<>();
         try {
             for (int i = 0; i < 3; i++) {
-                randomWait();
+                randomWait(2000, 5000);
                 String startDate = getRequiredDate(i * 10);
                 Document htmlDocument = getHtmlDocument(createURL(scrapInfo.getHotelName(), startDate, 10), proxies);
                 Elements elementsByRoom = htmlDocument.getElementsByClass("room-information");
@@ -109,14 +110,6 @@ public class IranHotelOnline extends BaseOTA {
         c.setTime(dt);
         c.add(Calendar.DATE, day);
         return DateConverter.getShamsidate(c.getTime());
-    }
-
-    private void randomWait() throws InterruptedException {
-        Random r = new Random();
-        int Low = sleep;
-        int High = sleep + 7000;
-        int rand = r.nextInt(High - Low) + Low;
-        Thread.sleep(rand);
     }
 
     @Override

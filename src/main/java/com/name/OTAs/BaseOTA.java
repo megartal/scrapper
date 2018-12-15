@@ -11,10 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @Author Akbar
@@ -45,6 +42,14 @@ public abstract class BaseOTA implements OTA {
 
     protected Elements getRoomElements(Document doc, String roomDiv) {
         return doc.getElementsByClass(roomDiv);
+    }
+
+    public void randomWait(int time, int random) throws InterruptedException {
+        Random r = new Random();
+        int Low = time;
+        int High = time + random;
+        int rand = r.nextInt(High - Low) + Low;
+        Thread.sleep(rand);
     }
 
 }

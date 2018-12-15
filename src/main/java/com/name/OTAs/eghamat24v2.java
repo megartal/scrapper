@@ -44,7 +44,7 @@ public class eghamat24v2 extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxies) throws Exception {
-        randomWait();
+        randomWait(sleep, 20000);
         List<Room> rooms = new ArrayList<>();
         try {
 //            String html1 = ApacheHttpClient.getHtmlUsingProxy(createURL(scrapInfo.getHotelName()), proxy);
@@ -87,13 +87,6 @@ public class eghamat24v2 extends BaseOTA {
         return c.getTime();
     }
 
-    private void randomWait() throws InterruptedException {
-        Random r = new Random();
-        int Low = sleep;
-        int High = sleep + 8000;
-        int rand = r.nextInt(High - Low) + Low;
-        Thread.sleep(rand);
-    }
 
     private String createURL(String hotelName) {
         setUrlToCrawl(String.format(urlPattern, hotelName));

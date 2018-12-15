@@ -42,13 +42,9 @@ public class Jainjas extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
-        Random r = new Random();
-        int Low = sleep;
-        int High = sleep + 20000;
-        int rand = r.nextInt(High - Low) + Low;
-        Thread.sleep(rand);
+        randomWait(sleep, 20000);
         try {
-            Thread.sleep(5000);
+            randomWait(2000, 3000);
             String html1 = ApacheHttpClient.getHtmlWithoutSSLCertificate(createURL(scrapInfo.getHotelName()));
             Document doc1 = Jsoup.parse(html1);
             String[] values = doc1.getElementsByAttributeValue("type", "text/javascript").get(0).data().split(";");
