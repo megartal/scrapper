@@ -46,22 +46,21 @@ public class Crawler {
     public void crawl(OTA ota) {
 //        List<Hotel> hotels = hotelService.getAllHotels();
         Iterable<Hotel> hotels = hotelService.getObsoleteHotel(30, ota.getName());
-////        log.info(ota.getName() + ": pick " + hotels + " hotel to crawl.");
-////        Hotel hotelByName = hotelService.getHotelByName("7da3a06b-ac86-4b95-9667-5f8943fcfd00");
-////        ArrayList<Hotel> hotels = new ArrayList<>();
-////        hotels.add(hotelByName);
-//        List<Proxy> proxies = proxyService.getHttpsProxies();
-//        if (proxies.size() < 10)
-//            updateProxies();
-//
-//        log.info("num of proxies: " + proxies.size());
-////        List<Proxy> proxies = proxyService.getHttpProxies();
+//        log.info(ota.getName() + ": pick " + hotels + " hotel to crawl.");
+//        Hotel hotelByName = hotelService.getHotelByName("7da3a06b-ac86-4b95-9667-5f8943fcfd00");
+//        ArrayList<Hotel> hotels = new ArrayList<>();
+//        hotels.add(hotelByName);
+        List<Proxy> proxies = proxyService.getHttpsProxies();
+        if (proxies.size() < 10)
+            updateProxies();
+
+        log.info("num of proxies: " + proxies.size());
+//        List<Proxy> proxies = proxyService.getHttpProxies();
         int count = 0;
         for (Hotel hotel : hotels) {
-//            Proxy proxy = proxies.get(count);
-            Proxy proxy = null;
+            Proxy proxy = proxies.get(count);
             count++;
-//            if (count > (proxies.size() - 2))
+            if (count > (proxies.size() - 2))
             count = 0;
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());

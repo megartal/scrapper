@@ -49,7 +49,7 @@ public class eghamat24v2 extends BaseOTA {
         try {
 //            String html1 = ApacheHttpClient.getHtmlUsingProxy(createURL(scrapInfo.getHotelName()), proxy);
 //            String html1 = ApacheHttpClient.getHtml("https://www.eghamat24.com/YazdHotels/SonnatiRoyayehGhadimHotel.html", proxies);
-            String html1 = ApacheHttpClient.getHtml(createURL(scrapInfo.getHotelName()), proxies);
+            String html1 = ApacheHttpClient.getHtmlUsingProxy(createURL(scrapInfo.getHotelName()), proxies);
             Document htmlDocument = Jsoup.parse(html1);
             Elements roomElements = htmlDocument.getElementsByClass("tr");
             for (Element roomElement : roomElements) {
