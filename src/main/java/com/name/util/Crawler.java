@@ -62,7 +62,7 @@ public class Crawler {
             Proxy proxy = null;
             count++;
 //            if (count > (proxies.size() - 2))
-                count = 0;
+            count = 0;
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
                 if (otaScrapInfo.getHotelName().equals("nist")) {

@@ -75,6 +75,7 @@ public class eghamat24v2 extends BaseOTA {
                     rooms.add(new Room(roomName, roomType, prices));
                 }
             }
+            rooms.get(0).getPrices().forEach(x -> System.out.println(x.getValue() + " " + x.getDate()));
             return rooms;
         } catch (Exception e) {
             throw e;

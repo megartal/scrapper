@@ -26,6 +26,7 @@ public class DateConverter {
         farsiMonthStringToInt.put("آبان", 8);
         farsiMonthStringToInt.put("آذر", 9);
         farsiMonthStringToInt.put("دی", 10);
+        farsiMonthStringToInt.put("دي", 10);
         farsiMonthStringToInt.put("بهمن", 11);
         farsiMonthStringToInt.put("اسفند", 12);
     }
