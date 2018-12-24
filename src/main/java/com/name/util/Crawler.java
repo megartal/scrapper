@@ -50,18 +50,19 @@ public class Crawler {
 //        Hotel hotelByName = hotelService.getHotelByName("7da3a06b-ac86-4b95-9667-5f8943fcfd00");
 //        ArrayList<Hotel> hotels = new ArrayList<>();
 //        hotels.add(hotelByName);
-        List<Proxy> proxies = proxyService.getHttpsProxies();
-        if (proxies.size() < 10)
-            updateProxies();
-
-        log.info("num of proxies: " + proxies.size());
-//        List<Proxy> proxies = proxyService.getHttpProxies();
-        int count = 0;
+//        List<Proxy> proxies = proxyService.getHttpsProxies();
+//        if (proxies.size() < 10)
+//            updateProxies();
+//
+//        log.info("num of proxies: " + proxies.size());
+////        List<Proxy> proxies = proxyService.getHttpProxies();
+//        int count = 0;
         for (Hotel hotel : hotels) {
-            Proxy proxy = proxies.get(count);
-            count++;
-            if (count > (proxies.size() - 2))
-            count = 0;
+//            Proxy proxy = proxies.get(count);
+            Proxy proxy = null;
+//            count++;
+//            if (count > (proxies.size() - 2))
+//            count = 0;
             try {
                 ScrapInfo otaScrapInfo = getOTAScrapInfo(hotel, ota.getName());
                 if (otaScrapInfo.getHotelName().equals("nist")) {
