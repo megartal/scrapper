@@ -16,4 +16,6 @@ public interface HotelRepository extends MongoRepository<Hotel, String>, HotelRe
 
     @Query(value = "{ }", fields = "{ 'scrapInfo' : 1}")
     List<Hotel> findAllIncludeOnlyScrapInfo();
+
+    void deleteByName(String name);
 }
