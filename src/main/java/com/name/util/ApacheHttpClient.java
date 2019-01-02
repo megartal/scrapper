@@ -20,6 +20,8 @@ import org.apache.http.ssl.SSLContextBuilder;
 import javax.net.ssl.*;
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -231,6 +233,16 @@ public class ApacheHttpClient {
         try (CloseableHttpClient httpclient = createAcceptSelfSignedCertificateClient()) {
             HttpGet httpget = new HttpGet(url);
             return IOUtils.toString(httpclient.execute(httpget).getEntity().getContent(), "UTF-8");
+        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void selfSignedHttpClientForImageDownload(String url, String filePath, String imageName) {
+        try (CloseableHttpClient httpclient = createAcceptSelfSignedCertificateClient()) {
+            HttpGet httpget = new HttpGet(url);
+            InputStream in = httpclient.execute(httpget).getEntity().getContent();
+            Files.copy(in, Paths.get(filePath + imageName));
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException | IOException e) {
             throw new RuntimeException(e);
         }

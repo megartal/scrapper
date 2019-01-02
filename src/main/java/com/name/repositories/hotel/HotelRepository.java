@@ -18,4 +18,6 @@ public interface HotelRepository extends MongoRepository<Hotel, String>, HotelRe
     List<Hotel> findAllIncludeOnlyScrapInfo();
 
     void deleteByName(String name);
+
+    Hotel findByName(String key);
 }
