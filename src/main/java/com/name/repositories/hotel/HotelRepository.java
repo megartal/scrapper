@@ -20,4 +20,6 @@ public interface HotelRepository extends MongoRepository<Hotel, String>, HotelRe
     void deleteByName(String name);
 
     Hotel findByName(String key);
+
+    List<Hotel> findByMainImage(String s);
 }

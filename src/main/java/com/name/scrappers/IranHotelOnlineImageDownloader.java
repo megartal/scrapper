@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,9 +33,10 @@ import java.util.UUID;
 @Profile("exteraHotels")
 public class IranHotelOnlineImageDownloader implements Scrapper {
 
-    //    public static final String SAMPLE_XLSX_FILE_PATH = "C:\\Users\\Alex\\Desktop\\hotels.xlsx";
-    public static final String SAMPLE_XLSX_FILE_PATH = "/home/ara/temp/hotels.xlsx";
-    public static final String filPath = "/home/ara/temp/images";
+    public static final String SAMPLE_XLSX_FILE_PATH = "C:\\Users\\Alex\\Desktop\\hotels.xlsx";
+    //    public static final String SAMPLE_XLSX_FILE_PATH = "/home/ara/temp/hotels.xlsx";
+    public static final String filPath = "E:\\images\\";
+    //    public static final String filPath = "/home/ara/temp/images/";
     private HotelRepository hotelRepository;
 
     public IranHotelOnlineImageDownloader(HotelRepository hotelRepository) {
@@ -45,10 +47,13 @@ public class IranHotelOnlineImageDownloader implements Scrapper {
     public void start() {
         try {
             Map<String, String> excelHotels = getData();
-            for (Map.Entry<String, String> entry : excelHotels.entrySet()) {
-                Hotel hotel = hotelRepository.findByName(entry.getKey());
+            List<Hotel> newHotels = hotelRepository.findByMainImage("sahand15570.jpg");
+            for (Hotel hotel : newHotels) {
+                String hotelURL = excelHotels.get(hotel.getName());
+                if (hotelURL == null || hotelURL.isEmpty())
+                    continue;
                 hotel.getImages().clear();
-                String html = ApacheHttpClient.selfSignedHttpClient("https://www.iranhotelonline.com/hotels/" + entry.getValue());
+                String html = ApacheHttpClient.selfSignedHttpClient("https://www.iranhotelonline.com/hotels/" + hotelURL);
                 Document doc = Jsoup.parse(html);
                 Element fotorama = doc.getElementsByClass("fotorama").get(0);
                 Elements aTag = fotorama.getElementsByTag("a");
@@ -62,6 +67,7 @@ public class IranHotelOnlineImageDownloader implements Scrapper {
                 }
                 hotelRepository.deleteByName(hotel.getName());
                 hotel.setId(UUID.randomUUID().toString());
+                hotel.getName().trim();
                 hotelRepository.save(hotel);
             }
         } catch (Exception e) {
