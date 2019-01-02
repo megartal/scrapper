@@ -33,10 +33,10 @@ import java.util.UUID;
 @Profile("exteraHotels")
 public class IranHotelOnlineImageDownloader implements Scrapper {
 
-    public static final String SAMPLE_XLSX_FILE_PATH = "C:\\Users\\Alex\\Desktop\\hotels.xlsx";
-    //    public static final String SAMPLE_XLSX_FILE_PATH = "/home/ara/temp/hotels.xlsx";
-    public static final String filPath = "E:\\images\\";
-    //    public static final String filPath = "/home/ara/temp/images/";
+    //    public static final String SAMPLE_XLSX_FILE_PATH = "C:\\Users\\Alex\\Desktop\\hotels.xlsx";
+    public static final String SAMPLE_XLSX_FILE_PATH = "/home/ara/temp/hotels.xlsx";
+    //    public static final String filPath = "E:\\images\\";
+    public static final String filPath = "/home/ara/temp/images/";
     private HotelRepository hotelRepository;
 
     public IranHotelOnlineImageDownloader(HotelRepository hotelRepository) {
