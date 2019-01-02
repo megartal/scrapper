@@ -47,6 +47,7 @@ public class IranHotelOnlineImageDownloader implements Scrapper {
             Map<String, String> excelHotels = getData();
             for (Map.Entry<String, String> entry : excelHotels.entrySet()) {
                 Hotel hotel = hotelRepository.findByName(entry.getKey());
+                hotel.getImages().clear();
                 String html = ApacheHttpClient.selfSignedHttpClient("https://www.iranhotelonline.com/hotels/" + entry.getValue());
                 Document doc = Jsoup.parse(html);
                 Element fotorama = doc.getElementsByClass("fotorama").get(0);
