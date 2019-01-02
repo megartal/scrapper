@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @Author Akbar
@@ -35,8 +34,8 @@ public class HotelInitiator implements Scrapper {
                 hotel.getScrapInfo().add(new ScrapInfo("snapptrip", new Date(), "empty"));
                 hotel.getScrapInfo().add(new ScrapInfo("jainjas", new Date(), "empty"));
                 hotel.getScrapInfo().add(new ScrapInfo("eghamat24", new Date(), "empty"));
-                hotelRepository.deleteByName(hotel.getName());
-                hotel.setId(UUID.randomUUID().toString());
+//                hotelRepository.deleteByName(hotel.getName());
+//                hotel.setId(UUID.randomUUID().toString());
                 hotelRepository.save(hotel);
             }
         }
