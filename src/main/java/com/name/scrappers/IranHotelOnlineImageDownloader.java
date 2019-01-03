@@ -48,6 +48,7 @@ public class IranHotelOnlineImageDownloader implements Scrapper {
         try {
             Map<String, String> excelHotels = getData();
             List<Hotel> newHotels = hotelRepository.findByMainImage("sahand15570.jpg");
+            //fixme what is this!!!
             for (Hotel hotel : newHotels) {
                 String hotelURL = excelHotels.get(hotel.getName());
                 if (hotelURL == null || hotelURL.isEmpty())
@@ -62,6 +63,7 @@ public class IranHotelOnlineImageDownloader implements Scrapper {
                     String alt = element.getElementsByAttribute("alt").attr("alt");
                     String imageName = UUID.randomUUID().toString() + ".jpg";
                     ApacheHttpClient.selfSignedHttpClientForImageDownload(href, filPath, imageName);
+                    //fixme add main image
                     hotel.getImages().add(new Image(imageName, alt));
                     Thread.sleep(3000);
                 }
