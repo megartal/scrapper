@@ -2,6 +2,7 @@ package com.name.scrappers;
 
 import com.name.documents.Hotel;
 import com.name.models.Image;
+import com.name.models.ScrapInfo;
 import com.name.repositories.hotel.HotelRepository;
 import com.name.util.ApacheHttpClient;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class IranHotelOnlineImageDownloader implements Scrapper {
     //    public static final String SAMPLE_XLSX_FILE_PATH = "C:\\Users\\Alex\\Desktop\\hotels.xlsx";
     public static final String SAMPLE_XLSX_FILE_PATH = "/home/ara/temp/hotels.xlsx";
     //    public static final String filPath = "E:\\images\\";
-    public static final String filPath = "/home/ara/temp/images/";
+    public static final String filPath = "/home/ara/temp/images1/";
     private HotelRepository hotelRepository;
 
     public IranHotelOnlineImageDownloader(HotelRepository hotelRepository) {
@@ -47,8 +48,7 @@ public class IranHotelOnlineImageDownloader implements Scrapper {
     public void start() {
         try {
             Map<String, String> excelHotels = getData();
-            List<Hotel> newHotels = hotelRepository.findByMainImage("sahand15570.jpg");
-            //fixme what is this!!!
+            List<Hotel> newHotels = hotelRepository.findByMainImage("hello");
             for (Hotel hotel : newHotels) {
                 String hotelURL = excelHotels.get(hotel.getName());
                 if (hotelURL == null || hotelURL.isEmpty())
@@ -58,17 +58,29 @@ public class IranHotelOnlineImageDownloader implements Scrapper {
                 Document doc = Jsoup.parse(html);
                 Element fotorama = doc.getElementsByClass("fotorama").get(0);
                 Elements aTag = fotorama.getElementsByTag("a");
+                for (ScrapInfo scrapInfo : hotel.getScrapInfo()) {
+                    if (scrapInfo.getOTAName().equals("iranHotelOnline")) {
+                        scrapInfo.setHotelName(hotelURL);
+                        hotel.getScrapInfo().add(scrapInfo);
+                    }
+                }
+                boolean first = true;
+                String firstAlt = "";
                 for (Element element : aTag) {
                     String href = "https://www.iranhotelonline.com" + element.getElementsByAttribute("href").attr("href");
                     String alt = element.getElementsByAttribute("alt").attr("alt");
                     String imageName = UUID.randomUUID().toString() + ".jpg";
                     ApacheHttpClient.selfSignedHttpClientForImageDownload(href, filPath, imageName);
-                    //fixme add main image
-                    hotel.getImages().add(new Image(imageName, alt));
-                    Thread.sleep(3000);
+                    if (first) {
+                        hotel.setMainImage(imageName);
+                        firstAlt = alt;
+                        first = false;
+                    } else {
+                        hotel.getImages().add(new Image(imageName, alt));
+                    }
+                    Thread.sleep(1000);
                 }
-                hotelRepository.deleteByName(hotel.getName());
-                hotel.setId(UUID.randomUUID().toString());
+                hotel.getImages().add(new Image(hotel.getMainImage(), firstAlt));
                 hotel.getName().trim();
                 hotelRepository.save(hotel);
             }
