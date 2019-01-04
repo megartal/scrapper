@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author Akbar
@@ -27,15 +29,18 @@ public class HotelInitiator implements Scrapper {
     @Override
     public void start() {
         List<Hotel> hotels = hotelRepository.findAll();
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, -3);
         for (Hotel hotel : hotels) {
             if (hotel.getScrapInfo().isEmpty() || hotel.getScrapInfo() == null) {
-                hotel.getScrapInfo().add(new ScrapInfo("iranHotelOnline", new Date(), "empty"));
-                hotel.getScrapInfo().add(new ScrapInfo("jabama", new Date(), "empty"));
-                hotel.getScrapInfo().add(new ScrapInfo("snapptrip", new Date(), "empty"));
-                hotel.getScrapInfo().add(new ScrapInfo("jainjas", new Date(), "empty"));
-                hotel.getScrapInfo().add(new ScrapInfo("eghamat24", new Date(), "empty"));
-//                hotelRepository.deleteByName(hotel.getName());
-//                hotel.setId(UUID.randomUUID().toString());
+                hotel.getScrapInfo().add(new ScrapInfo("iranHotelOnline", c.getTime(), "empty"));
+                hotel.getScrapInfo().add(new ScrapInfo("jabama", c.getTime(), "empty"));
+                hotel.getScrapInfo().add(new ScrapInfo("snapptrip", c.getTime(), "empty"));
+                hotel.getScrapInfo().add(new ScrapInfo("jainjas", c.getTime(), "empty"));
+                hotel.getScrapInfo().add(new ScrapInfo("eghamat24", c.getTime(), "empty"));
+                hotelRepository.deleteByName(hotel.getName());
+                hotel.setId(UUID.randomUUID().toString());
                 hotelRepository.save(hotel);
             }
         }
