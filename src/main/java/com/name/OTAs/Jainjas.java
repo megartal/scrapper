@@ -42,7 +42,7 @@ public class Jainjas extends BaseOTA {
 
     @Override
     public List<Room> getRoomsData(ScrapInfo scrapInfo, String city, Proxy proxy) throws Exception {
-//        randomWait(sleep, 20000);
+        randomWait(sleep, 20000);
         try {
             randomWait(2000, 3000);
             String html1 = ApacheHttpClient.getHtmlWithoutSSLCertificate(createURL(scrapInfo.getHotelName()));
