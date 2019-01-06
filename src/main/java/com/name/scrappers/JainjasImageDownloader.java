@@ -36,10 +36,10 @@ import java.util.UUID;
 @Slf4j
 @Profile("exteraHotelsJainjas")
 public class JainjasImageDownloader implements Scrapper {
-    public static final String SAMPLE_XLSX_FILE_PATH = "C:\\Users\\Alex\\Desktop\\hotels.xlsx";
-    //    public static final String SAMPLE_XLSX_FILE_PATH = "/home/ara/temp/hotels.xlsx";
-    public static final String filPath = "E:\\images\\";
-    //    public static final String filPath = "/home/ara/temp/images2/";
+    //    public static final String SAMPLE_XLSX_FILE_PATH = "C:\\Users\\Alex\\Desktop\\hotels.xlsx";
+    public static final String SAMPLE_XLSX_FILE_PATH = "/home/ara/temp/hotels.xlsx";
+    //    public static final String filPath = "E:\\images\\";
+    public static final String filPath = "/home/ara/temp/images3/";
     private HotelRepository hotelRepository;
 
     public JainjasImageDownloader(HotelRepository hotelRepository) {
@@ -70,8 +70,8 @@ public class JainjasImageDownloader implements Scrapper {
                 boolean first = true;
                 String firstAlt = "";
                 for (Element imageElement : imageElements) {
-                    String href = imageElement.getElementsByAttribute("data-src").text();
-                    String alt = imageElement.getElementsByAttribute("alt").text();
+                    String href = imageElement.attr("data-src");
+                    String alt = imageElement.attr("alt");
                     String imageName = UUID.randomUUID().toString() + ".jpg";
                     InputStream in = ApacheHttpClient.getImageWithoutSSLCertificate(href);
                     Files.copy(in, Paths.get(filPath + imageName));
