@@ -39,7 +39,7 @@ public class JainjasImageDownloader implements Scrapper {
     //    public static final String SAMPLE_XLSX_FILE_PATH = "C:\\Users\\Alex\\Desktop\\hotels.xlsx";
     public static final String SAMPLE_XLSX_FILE_PATH = "/home/ara/temp/hotels.xlsx";
     //    public static final String filPath = "E:\\images\\";
-    public static final String filPath = "/home/ara/temp/images3/";
+    public static final String filPath = "/home/ara/temp/images4/";
     private HotelRepository hotelRepository;
 
     public JainjasImageDownloader(HotelRepository hotelRepository) {
